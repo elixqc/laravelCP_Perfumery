@@ -7,7 +7,9 @@ use App\Models\Order;
 use App\Models\Product;
 use App\Models\Supplier;
 use App\Models\User;
+use App\Charts\BestSellingPerfume;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class AdminController extends Controller
@@ -162,7 +164,7 @@ class AdminController extends Controller
 
     public function orders()
     {
-        $orders = Order::with('user')->latest()->paginate(20);
+        $orders = Order::with('user')->orderBy('order_date', 'desc')->paginate(20);
         return view('admin.orders.index', compact('orders'));
     }
 
@@ -182,5 +184,29 @@ class AdminController extends Controller
         $order->update(['order_status' => $request->status]);
 
         return back()->with('success', 'Order status updated.');
+    }
+
+    // ── REPORTS & CHARTS ───────────────────────────────────────
+
+    /**
+     * Display a chart of best selling perfumes.
+     */
+    public function bestSellingChart()
+    {
+        // Aggregate quantities by product and order by total sold
+        $data = Product::select('products.product_name', DB::raw('SUM(order_details.quantity) as total'))
+            ->join('order_details', 'products.product_id', '=', 'order_details.product_id')
+            ->groupBy('products.product_id', 'products.product_name')
+            ->orderByDesc('total')
+            ->take(10)
+            ->get();
+
+        $chart = new BestSellingPerfume();
+        $chart->labels($data->pluck('product_name')->toArray());
+        $chart->dataset('Units Sold', 'bar', $data->pluck('total')->toArray())
+            ->backgroundColor('rgba(54, 162, 235, 0.5)')
+            ->color('rgba(54, 162, 235, 1)');
+
+        return view('admin.charts.best_sellers', compact('chart'));
     }
 }

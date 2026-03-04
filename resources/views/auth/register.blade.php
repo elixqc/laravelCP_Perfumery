@@ -16,21 +16,39 @@
             <form method="POST" action="{{ route('register') }}">
                 @csrf
 
-                {{-- Name --}}
+                {{-- Username --}}
                 <div class="pp-auth-field">
-                    <label for="name" class="pp-auth-label">Full Name</label>
+                    <label for="username" class="pp-auth-label">Username</label>
                     <input
-                        id="name"
+                        id="username"
                         type="text"
-                        name="name"
-                        value="{{ old('name') }}"
-                        placeholder="Your name"
-                        class="pp-auth-input @error('name') is-invalid @enderror"
+                        name="username"
+                        value="{{ old('username') }}"
+                        placeholder="Choose a username"
+                        class="pp-auth-input @error('username') is-invalid @enderror"
                         required
-                        autocomplete="name"
+                        autocomplete="username"
                         autofocus
                     >
-                    @error('name')
+                    @error('username')
+                        <span class="pp-auth-error" role="alert">{{ $message }}</span>
+                    @enderror
+                </div>
+
+                {{-- Full Name --}}
+                <div class="pp-auth-field">
+                    <label for="full_name" class="pp-auth-label">Full Name</label>
+                    <input
+                        id="full_name"
+                        type="text"
+                        name="full_name"
+                        value="{{ old('full_name') }}"
+                        placeholder="Your full name"
+                        class="pp-auth-input @error('full_name') is-invalid @enderror"
+                        required
+                        autocomplete="name"
+                    >
+                    @error('full_name')
                         <span class="pp-auth-error" role="alert">{{ $message }}</span>
                     @enderror
                 </div>

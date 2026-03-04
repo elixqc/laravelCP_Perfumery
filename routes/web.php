@@ -59,6 +59,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/orders', [AdminController::class, 'orders'])->name('orders.index');
     Route::get('/orders/{id}', [AdminController::class, 'showOrder'])->name('orders.show');
     Route::patch('/orders/{id}/status', [AdminController::class, 'updateOrderStatus'])->name('orders.updateStatus');
+
+    // Charts / Reports
+    Route::get('/charts/best-selling', [AdminController::class, 'bestSellingChart'])->name('charts.bestSelling');
 });
 
 Auth::routes();

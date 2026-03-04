@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('content')
 <div class="pa-page">
@@ -26,6 +26,25 @@
         @if($order->date_received)
             <p><strong>Date Received:</strong> {{ $order->date_received->format('M d, Y') }}</p>
         @endif
+    </div>
+
+    {{-- UPDATE STATUS FORM --}}
+    <div class="mb-8 p-4 bg-gray-50 rounded border">
+        <h3 class="text-lg font-semibold mb-4">Update Order Status</h3>
+        <form method="POST" action="{{ route('admin.orders.updateStatus', $order->order_id) }}" class="flex gap-4 items-end">
+            @csrf
+            @method('PATCH')
+            <div class="flex-1">
+                <label for="status" class="block text-sm font-medium mb-2">New Status</label>
+                <select name="status" id="status" class="w-full border rounded px-3 py-2" required>
+                    <option value="pending" {{ $order->order_status === 'pending' ? 'selected' : '' }}>Pending</option>
+                    <option value="processing" {{ $order->order_status === 'processing' ? 'selected' : '' }}>Processing</option>
+                    <option value="completed" {{ $order->order_status === 'completed' ? 'selected' : '' }}>Completed</option>
+                    <option value="cancelled" {{ $order->order_status === 'cancelled' ? 'selected' : '' }}>Cancelled</option>
+                </select>
+            </div>
+            <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">Update Status</button>
+        </form>
     </div>
 
     <h2 class="text-2xl font-semibold mb-4">Order Items</h2>

@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('content')
 <div class="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black">
@@ -31,23 +31,23 @@
                                 <td class="px-6 py-4 text-sm text-gold-300">{{ $order->order_date->format('M d, Y') }}</td>
                                 <td class="px-6 py-4 text-sm text-gold-400 font-semibold">${{ number_format($order->total_amount, 2) }}</td>
                                 <td class="px-6 py-4 text-sm">
-                                    <form method="POST" action="{{ route('admin.orders.updateStatus', $order->order_id) }}" class="inline">
+                                    <form method="POST" action="{{ route('admin.orders.updateStatus', $order->order_id) }}" class="inline" id="status-form-{{ $order->order_id }}">
                                         @csrf
                                         @method('PATCH')
                                         <select name="status"
-                                                onchange="this.form.submit()"
+                                                onchange="document.getElementById('status-form-{{ $order->order_id }}').submit()"
                                                 class="bg-gray-800/50 border border-gold-400/30 rounded-md px-3 py-1 text-sm text-white focus:outline-none focus:ring-2 focus:ring-gold-400 focus:border-transparent">
                                             <option value="pending" {{ $order->order_status == 'pending' ? 'selected' : '' }}
                                                     class="bg-gray-800 text-white">Pending</option>
                                             <option value="processing" {{ $order->order_status == 'processing' ? 'selected' : '' }}
                                                     class="bg-gray-800 text-white">Processing</option>
-                                            <option value="shipped" {{ $order->order_status == 'shipped' ? 'selected' : '' }}
-                                                    class="bg-gray-800 text-white">Shipped</option>
-                                            <option value="delivered" {{ $order->order_status == 'delivered' ? 'selected' : '' }}
-                                                    class="bg-gray-800 text-white">Delivered</option>
+                                            <option value="completed" {{ $order->order_status == 'completed' ? 'selected' : '' }}
+                                                    class="bg-gray-800 text-white">Completed</option>
                                             <option value="cancelled" {{ $order->order_status == 'cancelled' ? 'selected' : '' }}
                                                     class="bg-gray-800 text-white">Cancelled</option>
                                         </select>
+                                    </form>
+                                </td>
                                     </form>
                                 </td>
                                 <td class="px-6 py-4 text-sm">

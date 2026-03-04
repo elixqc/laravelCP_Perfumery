@@ -10,6 +10,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Jost:wght@200;300;400&display=swap" rel="stylesheet">
 
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="pa-body">
@@ -45,6 +47,11 @@
                 <a href="{{ route('admin.orders.index') }}"
                    class="pa-nav-link {{ request()->routeIs('admin.orders.*') ? 'pa-nav-link--active' : '' }}">
                     Orders
+                </a>
+                <span class="pa-nav-divider"></span>
+                <a href="{{ route('admin.charts.bestSelling') }}"
+                   class="pa-nav-link {{ request()->routeIs('admin.charts.*') ? 'pa-nav-link--active' : '' }}">
+                    Reports
                 </a>
             </nav>
 
@@ -95,6 +102,7 @@
         </div>
     </footer>
 
+    @yield('scripts')
 </div>
 </body>
 </html>

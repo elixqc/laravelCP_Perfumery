@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('content')
 <div class="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black">
