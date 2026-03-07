@@ -33,7 +33,7 @@
         </div>
         <div class="pa-stat-card pa-stat-card--gold">
             <span class="pa-stat-label">Revenue</span>
-            <span class="pa-stat-value">${{ number_format($totalRevenue ?? 0, 2) }}</span>
+            <span class="pa-stat-value">₱{{ number_format($totalRevenue ?? 0, 2) }}</span>
             <span class="pa-stat-link">All time</span>
         </div>
     </div>
@@ -82,7 +82,7 @@
                     <tr>
                         <td>#{{ $order->order_id }}</td>
                         <td>{{ $order->user->name ?? '—' }}</td>
-                        <td>${{ number_format($order->total_amount, 2) }}</td>
+                        <td>₱{{ number_format($order->total_amount, 2) }}</td>
                         <td>
                             <span class="pa-status pa-status--{{ strtolower($order->order_status) }}">
                                 {{ ucfirst($order->order_status) }}

@@ -80,14 +80,14 @@
                                         {{-- Unit Price --}}
                                         <td style="padding:1rem 1.2rem; vertical-align:middle;">
                                             <span style="font-size:0.88rem; color:#5A524A; font-family:'Jost',sans-serif; font-weight:400;">
-                                                ${{ number_format($detail->unit_price, 2) }}
+                                                ₱{{ number_format($detail->unit_price, 2) }}
                                             </span>
                                         </td>
 
                                         {{-- Subtotal --}}
                                         <td style="padding:1rem 1.2rem; vertical-align:middle;">
                                             <span style="font-family:'Cormorant Garamond',serif; font-size:1.05rem; font-weight:300; color:#B5975A; letter-spacing:0.02em;">
-                                                ${{ number_format($detail->subtotal, 2) }}
+                                                ₱{{ number_format($detail->subtotal, 2) }}
                                             </span>
                                         </td>
 
@@ -103,7 +103,7 @@
                             Order Total
                         </span>
                         <span style="font-family:'Cormorant Garamond',serif; font-size:1.5rem; font-weight:300; color:#1A1714; letter-spacing:0.02em;">
-                            ${{ number_format($order->calculated_total, 2) }}
+                            ₱{{ number_format($order->calculated_total, 2) }}
                         </span>
                     </div>
                 </div>

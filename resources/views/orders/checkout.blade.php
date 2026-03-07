@@ -27,7 +27,7 @@
                             <div class="pp-checkout-item-qty">Quantity: {{ $item->quantity }}</div>
                         </div>
                         <div class="pp-checkout-item-price">
-                            ${{ number_format($item->product->selling_price * $item->quantity, 2) }}
+                            ₱{{ number_format($item->product->selling_price * $item->quantity, 2) }}
                         </div>
                     </div>
                 @endforeach
@@ -36,7 +36,7 @@
             <div class="pp-checkout-summary">
                 <div class="pp-checkout-total-row">
                     <span class="pp-checkout-total-label">Subtotal</span>
-                    <span class="pp-checkout-total-value">${{ number_format($total, 2) }}</span>
+                    <span class="pp-checkout-total-value">₱{{ number_format($total, 2) }}</span>
                 </div>
 
                 <div class="pp-checkout-total-row">
@@ -46,13 +46,13 @@
 
                 <div class="pp-checkout-total-row">
                     <span class="pp-checkout-total-label">Tax</span>
-                    <span class="pp-checkout-total-value">$0.00</span>
+                    <span class="pp-checkout-total-value">₱0.00</span>
                 </div>
             </div>
 
             <div class="pp-checkout-total-final">
                 <span class="pp-checkout-final-label">Total</span>
-                <span class="pp-checkout-final-value">${{ number_format($total, 2) }}</span>
+                <span class="pp-checkout-final-value">₱{{ number_format($total, 2) }}</span>
             </div>
 
             <p class="pp-checkout-security">🔒 Secure checkout with SSL encryption</p>

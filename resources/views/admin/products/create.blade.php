@@ -119,7 +119,7 @@
                                 Cost Price
                             </label>
                             <div style="position:relative;">
-                                <span style="position:absolute; left:0.85rem; top:50%; transform:translateY(-50%); font-size:0.9rem; color:#8C8078; pointer-events:none;">$</span>
+                                <span style="position:absolute; left:0.85rem; top:50%; transform:translateY(-50%); font-size:0.9rem; color:#8C8078; pointer-events:none;">₱</span>
                                 <input type="number" step="0.01" min="0" name="initial_price" id="initial_price"
                                        value="{{ old('initial_price') }}" placeholder="0.00"
                                        style="background:#fff; border:1.5px solid {{ $errors->has('initial_price') ? '#C97A7A' : '#B0A898' }}; color:#1A1714; font-family:'Jost',sans-serif; font-weight:400; font-size:0.95rem; padding:0.75rem 1rem 0.75rem 2rem; outline:none; width:100%; transition:border-color 0.2s; border-radius:2px;"
@@ -138,7 +138,7 @@
                                 Selling Price
                             </label>
                             <div style="position:relative;">
-                                <span style="position:absolute; left:0.85rem; top:50%; transform:translateY(-50%); font-size:0.9rem; color:#8C8078; pointer-events:none;">$</span>
+                                <span style="position:absolute; left:0.85rem; top:50%; transform:translateY(-50%); font-size:0.9rem; color:#8C8078; pointer-events:none;">₱</span>
                                 <input type="number" step="0.01" min="0" name="selling_price" id="selling_price"
                                        value="{{ old('selling_price') }}" placeholder="0.00"
                                        style="background:#fff; border:1.5px solid {{ $errors->has('selling_price') ? '#C97A7A' : '#B0A898' }}; color:#1A1714; font-family:'Jost',sans-serif; font-weight:400; font-size:0.95rem; padding:0.75rem 1rem 0.75rem 2rem; outline:none; width:100%; transition:border-color 0.2s; border-radius:2px;"

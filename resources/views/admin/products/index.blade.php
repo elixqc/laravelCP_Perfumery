@@ -122,7 +122,7 @@
                             {{-- Cost Price --}}
                             <td style="padding:1rem 1.2rem; font-size:0.88rem; color:#5A524A; font-family:'Jost',sans-serif; font-weight:300; vertical-align:middle;">
                                 @if($product->initial_price !== null)
-                                    ${{ number_format($product->initial_price, 2) }}
+                                    ₱{{ number_format($product->initial_price, 2) }}
                                 @else
                                     <span style="color:#C8BEB2;">—</span>
                                 @endif
@@ -132,7 +132,7 @@
                             <td style="padding:1rem 1.2rem; vertical-align:middle;">
                                 @if($product->selling_price !== null)
                                     <span style="font-family:'Cormorant Garamond',serif; font-size:1.05rem; font-weight:300; color:#B5975A; letter-spacing:0.02em;">
-                                        ${{ number_format($product->selling_price, 2) }}
+                                        ₱{{ number_format($product->selling_price, 2) }}
                                     </span>
                                 @else
                                     <span style="color:#C8BEB2; font-size:0.88rem;">—</span>

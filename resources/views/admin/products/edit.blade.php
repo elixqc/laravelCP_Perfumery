@@ -54,7 +54,6 @@
                                minlength="2" maxlength="255" required
                                placeholder="e.g. Oud Royale Intense"
                                style="background:#fff; border:1.5px solid {{ $errors->has('product_name') ? '#C97A7A' : '#B0A898' }}; color:#1A1714; font-family:'Jost',sans-serif; font-weight:400; font-size:0.95rem; padding:0.75rem 1rem; outline:none; width:100%; transition:border-color 0.2s; border-radius:2px;"
-                               id="product_name"
                                oninput="validateField(this, 2, 255)"
                                onfocus="this.style.borderColor='#B5975A'"
                                onblur="validateField(this, 2, 255)">
@@ -122,7 +121,7 @@
                                 Cost Price
                             </label>
                             <div style="position:relative;">
-                                <span style="position:absolute; left:0.85rem; top:50%; transform:translateY(-50%); font-size:0.9rem; color:#8C8078; font-family:'Jost',sans-serif; pointer-events:none;">$</span>
+                                <span style="position:absolute; left:0.85rem; top:50%; transform:translateY(-50%); font-size:0.9rem; color:#8C8078; font-family:'Jost',sans-serif; pointer-events:none;">₱</span>
                                 <input type="number" step="0.01" min="0" name="initial_price" id="initial_price"
                                        value="{{ old('initial_price', $product->initial_price) }}" placeholder="0.00"
                                        style="background:#fff; border:1.5px solid {{ $errors->has('initial_price') ? '#C97A7A' : '#B0A898' }}; color:#1A1714; font-family:'Jost',sans-serif; font-weight:400; font-size:0.95rem; padding:0.75rem 1rem 0.75rem 2rem; outline:none; width:100%; transition:border-color 0.2s; border-radius:2px;"
@@ -141,7 +140,7 @@
                                 Selling Price
                             </label>
                             <div style="position:relative;">
-                                <span style="position:absolute; left:0.85rem; top:50%; transform:translateY(-50%); font-size:0.9rem; color:#8C8078; font-family:'Jost',sans-serif; pointer-events:none;">$</span>
+                                <span style="position:absolute; left:0.85rem; top:50%; transform:translateY(-50%); font-size:0.9rem; color:#8C8078; font-family:'Jost',sans-serif; pointer-events:none;">₱</span>
                                 <input type="number" step="0.01" min="0" name="selling_price" id="selling_price"
                                        value="{{ old('selling_price', $product->selling_price) }}" placeholder="0.00"
                                        style="background:#fff; border:1.5px solid {{ $errors->has('selling_price') ? '#C97A7A' : '#B0A898' }}; color:#1A1714; font-family:'Jost',sans-serif; font-weight:400; font-size:0.95rem; padding:0.75rem 1rem 0.75rem 2rem; outline:none; width:100%; transition:border-color 0.2s; border-radius:2px;"
@@ -243,14 +242,15 @@
                 </p>
                 <div style="background:#FDFBF8; border:1px solid #D6D0C8; padding:2rem; display:flex; flex-direction:column; gap:1.5rem;">
 
+                    {{-- Current Images --}}
                     @if($product->productImages->count() > 0)
                         <div>
                             <p style="font-size:0.82rem; font-weight:500; color:#2C2825; font-family:'Jost',sans-serif; margin-bottom:0.75rem;">
-                                Current Images ({{ $product->productImages->count() }})
+                                Current Images (<span id="image-count">{{ $product->productImages->count() }}</span>)
                             </p>
-                            <div style="display:grid; grid-template-columns:repeat(5,1fr); gap:6px;">
+                            <div style="display:grid; grid-template-columns:repeat(5,1fr); gap:6px;" id="current-images-grid">
                                 @foreach($product->productImages as $index => $img)
-                                    <div style="aspect-ratio:1/1; overflow:hidden; background:#EDE8DF; border:1.5px solid #D6D0C8; position:relative;">
+                                    <div style="aspect-ratio:1/1; overflow:hidden; background:#EDE8DF; border:1.5px solid #D6D0C8; position:relative;" id="img-wrap-{{ $img->image_id }}">
                                         <img src="{{ asset('storage/' . $img->image_path) }}"
                                              alt="Image {{ $index + 1 }}"
                                              style="width:100%; height:100%; object-fit:cover; display:block; transition:transform 0.35s;"
@@ -259,20 +259,29 @@
                                         <span style="position:absolute; top:4px; left:4px; background:rgba(26,23,20,0.7); color:#fff; font-family:'Jost',sans-serif; font-size:0.65rem; font-weight:500; padding:2px 7px;">
                                             {{ $index + 1 }}
                                         </span>
+                                        <button type="button"
+                                                onclick="deleteImage({{ $img->image_id }}, this)"
+                                                style="position:absolute; top:4px; right:4px; width:22px; height:22px; background:rgba(139,58,58,0.85); border:none; color:#fff; font-size:0.75rem; line-height:1; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:background 0.2s;"
+                                                onmouseover="this.style.background='#C97A7A'"
+                                                onmouseout="this.style.background='rgba(139,58,58,0.85)'"
+                                                title="Remove image">
+                                            ✕
+                                        </button>
                                     </div>
                                 @endforeach
                             </div>
                             <p style="font-size:0.78rem; color:#8C8078; font-family:'Jost',sans-serif; margin-top:0.6rem;">
-                                Uploading new images will replace the existing ones.
+                                Click ✕ to permanently remove an image. New uploads will be added to remaining ones.
                             </p>
                         </div>
                         <div style="height:1px; background:#E8E2D9;"></div>
                     @endif
 
+                    {{-- Upload New Images --}}
                     <div>
                         @if($product->productImages->count() > 0)
                             <p style="font-size:0.82rem; font-weight:500; color:#2C2825; font-family:'Jost',sans-serif; margin-bottom:0.75rem;">
-                                Upload Replacement Images
+                                Upload New Images
                             </p>
                         @endif
                         <label for="images" id="dropzone"
@@ -344,20 +353,57 @@
 </div>
 
 <script>
+    /* ── Image Delete ── */
+    function deleteImage(imageId, btn) {
+        if (!confirm('Remove this image? This cannot be undone.')) return;
+
+        const wrap = document.getElementById('img-wrap-' + imageId);
+        wrap.style.opacity = '0.4';
+        btn.disabled = true;
+
+        fetch('{{ url('admin/products/images') }}/' + imageId, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                'Accept': 'application/json',
+            }
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                wrap.style.transition = 'opacity 0.3s';
+                wrap.style.opacity = '0';
+                setTimeout(() => {
+                    wrap.remove();
+                    const countEl = document.getElementById('image-count');
+                    if (countEl) countEl.textContent = parseInt(countEl.textContent) - 1;
+                }, 300);
+            } else {
+                wrap.style.opacity = '1';
+                btn.disabled = false;
+                alert('Could not delete image. Please try again.');
+            }
+        })
+        .catch(() => {
+            wrap.style.opacity = '1';
+            btn.disabled = false;
+            alert('Network error. Please try again.');
+        });
+    }
+
     /* ── Helpers ── */
     function setFieldState(input, isError, message) {
-        const name    = input.name.replace('[]', '');
-        const errEl   = document.getElementById(name + '-error');
+        const name  = input.name.replace('[]', '');
+        const errEl = document.getElementById(name + '-error');
         input.style.borderColor = isError ? '#C97A7A' : '#B5975A';
         if (errEl) {
-            errEl.textContent = isError ? message : '';
+            errEl.textContent  = isError ? message : '';
             errEl.style.display = isError ? 'block' : 'none';
         }
     }
 
     function updateCounter(input, max) {
-        const counterId = input.id + '-counter';
-        const counter   = document.getElementById(counterId);
+        const counter = document.getElementById(input.id + '-counter');
         if (!counter) return;
         const len = input.value.length;
         counter.textContent = len + '/' + max;
@@ -383,7 +429,6 @@
         const val = textarea.value.trim();
         updateCounter(textarea, max);
         if (val === '') {
-            // description is optional — clear error on empty
             const errEl = document.getElementById('description-error');
             if (errEl) { errEl.textContent = ''; errEl.style.display = 'none'; }
             textarea.style.borderColor = '#B0A898';
@@ -400,7 +445,7 @@
 
     function validateNumeric(input) {
         const val = input.value;
-        if (val === '') { setFieldState(input, false, ''); return; } // optional
+        if (val === '') { setFieldState(input, false, ''); return; }
         if (isNaN(val) || parseFloat(val) < 0) {
             setFieldState(input, true, 'Must be a valid non-negative number.');
         } else {
@@ -431,7 +476,7 @@
         const errEl   = document.getElementById('images-error');
         const preview = document.getElementById('image-preview');
         const allowed = ['image/jpeg', 'image/png', 'image/webp'];
-        const maxSize = 4 * 1024 * 1024; // 4MB
+        const maxSize = 4 * 1024 * 1024;
         let errorMsg  = '';
 
         preview.innerHTML = '';
@@ -443,7 +488,7 @@
             return;
         }
 
-        Array.from(input.files).forEach((file, i) => {
+        Array.from(input.files).forEach((file) => {
             if (!allowed.includes(file.type)) {
                 errorMsg = '"' + file.name + '" is not a valid image type. Use JPG, PNG, or WEBP.';
             } else if (file.size > maxSize) {
@@ -452,15 +497,15 @@
         });
 
         if (errorMsg) {
-            errEl.textContent   = errorMsg;
-            errEl.style.display = 'block';
-            input.value         = '';
+            errEl.textContent     = errorMsg;
+            errEl.style.display   = 'block';
+            input.value           = '';
             preview.style.display = 'none';
             document.getElementById('dropzone-label').textContent = 'Click to choose images';
             return;
         }
 
-        errEl.style.display = 'none';
+        errEl.style.display   = 'none';
         preview.style.display = 'grid';
         Array.from(input.files).forEach((file, i) => {
             const reader = new FileReader();
@@ -483,32 +528,28 @@
             input.files.length + ' image' + (input.files.length > 1 ? 's' : '') + ' selected';
     }
 
-    /* ── Client-side form guard before submit ── */
+    /* ── Form submit guard ── */
     document.getElementById('edit-product-form').addEventListener('submit', function(e) {
         let hasError = false;
 
-        // Product Name
         const pn = document.getElementById('product_name');
         if (pn.value.trim().length < 2) {
             setFieldState(pn, true, 'Product name must be at least 2 characters.');
             hasError = true;
         }
 
-        // Description (optional but min 10 if filled)
         const desc = document.getElementById('description');
         if (desc.value.trim().length > 0 && desc.value.trim().length < 10) {
             setFieldState(desc, true, 'Description must be at least 10 characters.');
             hasError = true;
         }
 
-        // Stock Quantity
         const sq = document.getElementById('stock_quantity');
         if (sq.value.trim() === '' || !Number.isInteger(Number(sq.value)) || Number(sq.value) < 0) {
             setFieldState(sq, true, sq.value.trim() === '' ? 'Stock quantity is required.' : 'Must be a whole number (0 or more).');
             hasError = true;
         }
 
-        // Category & Supplier
         ['category_id', 'supplier_id'].forEach(id => {
             const el = document.getElementById(id);
             if (!el.value) {
@@ -519,13 +560,12 @@
 
         if (hasError) {
             e.preventDefault();
-            // Scroll to first error
             const first = document.querySelector('.field-error[style*="block"]');
             if (first) first.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
     });
 
-    /* ── Init checkbox ── */
+    /* ── Init checkbox visual state ── */
     document.addEventListener('DOMContentLoaded', () => {
         const cb = document.getElementById('is_active');
         if (cb) {

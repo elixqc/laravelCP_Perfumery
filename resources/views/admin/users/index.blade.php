@@ -230,8 +230,8 @@
                 {
                     data: 'user_id',
                     name: 'user_id',
-                    render: (data) =>
-                        `<span style="font-size:0.78rem; color:#8C8078; font-family:'Jost',sans-serif; font-weight:300;">#${data}</span>`,
+                        render: (data) =>
+                            `<span style="font-size:0.78rem; color:#8C8078; font-family:'Jost',sans-serif; font-weight:300;">#${data}</span>`,
                 },
                 // Username — rendered client-side (raw field)
                 {
@@ -349,4 +349,4 @@
         }
     });
 </script>
-@endsection
+@endsection 

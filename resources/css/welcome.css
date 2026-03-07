@@ -1,0 +1,559 @@
+/* =============================================================
+   welcome.css — Styles scoped to the Welcome / Home page
+   Place at: resources/css/welcome.css
+   Import in resources/css/app.css AFTER prestige.css
+   ============================================================= */
+
+
+/* ── HOME HERO ──────────────────────────────────────────────── */
+/*  .pp-hero is defined in prestige.css (products page base)
+    .pp-hero--home overrides / extends it for the homepage      */
+
+.pp-hero--home {
+    position: relative;
+    background: url('/images/home-hero.png') center/cover no-repeat;
+    padding: 9rem 2.5rem 7rem;
+    min-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.pp-hero--home::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.45));
+    z-index: 0;
+    pointer-events: none;
+}
+
+.pp-hero--home > * {
+    position: relative;
+    z-index: 1;
+}
+
+.pp-hero--home h1 {
+    font-size: clamp(3rem, 8vw, 7rem) !important;
+    margin-bottom: 1.5rem;
+    line-height: 1.05 !important;
+}
+
+.pp-hero--home p {
+    max-width: 480px;
+    margin-bottom: 2.8rem;
+}
+
+/* Ghost button — light variant used on the dark hero */
+.pp-btn-ghost--light {
+    border-color: rgba(248, 245, 240, 0.4);
+    color: var(--ivory);
+}
+
+.pp-btn-ghost--light:hover {
+    background: var(--ivory);
+    color: var(--ink);
+    border-color: var(--ivory);
+}
+
+
+/* ── SHARED SECTION PRIMITIVES (home-only usage) ────────────── */
+/*  These primitives back all three home sections:
+    Featured Products (.pp-section--ivory)
+    About            (.pp-section--cream)
+    Newsletter       (.pp-section--dark)                        */
+
+.pp-section {
+    padding: 5rem 2.5rem;
+}
+
+.pp-section--ivory { background: var(--white); }
+.pp-section--cream { background: var(--cream); }
+.pp-section--dark  { background: var(--ink); }
+
+.pp-section-inner {
+    max-width: 1280px;
+    margin: 0 auto;
+}
+
+.pp-section-inner--centered {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.pp-section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 3rem;
+    padding-bottom: 1.2rem;
+    border-bottom: 1px solid var(--cream);
+}
+
+.pp-section-header--centered {
+    justify-content: center;
+}
+
+.pp-section-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.6rem;
+    font-weight: 300;
+    letter-spacing: 0.08em;
+    color: var(--ink);
+    font-style: italic;
+}
+
+.pp-section-cta {
+    margin-top: 3.5rem;
+    text-align: center;
+}
+
+/* Decorative rule used in Hero and Newsletter sections */
+.pp-hero-rule {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.2rem;
+    margin-bottom: 1.8rem;
+}
+
+.pp-hero-rule span {
+    display: block;
+    height: 1px;
+    width: 60px;
+    background: linear-gradient(to right, transparent, var(--gold));
+}
+
+.pp-hero-rule span:last-child {
+    background: linear-gradient(to left, transparent, var(--gold));
+}
+
+.pp-hero-rule em {
+    font-style: normal;
+    font-size: 0.58rem;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-family: 'Jost', sans-serif;
+    font-weight: 300;
+}
+
+/* Eyebrow labels */
+.pp-eyebrow {
+    font-size: 0.58rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--stone);
+    font-family: 'Jost', sans-serif;
+    font-weight: 300;
+    display: block;
+    margin-bottom: 1rem;
+}
+
+.pp-eyebrow--gold { color: var(--gold); }
+
+/* Ghost button (shared, also used by empty-state on products page) */
+.pp-btn-ghost {
+    display: inline-block;
+    border: 1px solid var(--ink);
+    color: var(--ink);
+    font-family: 'Jost', sans-serif;
+    font-size: 0.62rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    font-weight: 300;
+    padding: 0.8rem 2.5rem;
+    text-decoration: none;
+    transition: background 0.25s ease, color 0.25s ease;
+}
+
+.pp-btn-ghost:hover {
+    background: var(--ink);
+    color: var(--ivory);
+}
+
+
+/* ── FEATURED PRODUCTS GRID ─────────────────────────────────── */
+
+.pp-featured-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+}
+
+/* Product card (shared component, rendered on home + products page) */
+.pp-card {
+    background: var(--white);
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: border-color 0.3s ease;
+}
+
+.pp-card:hover {
+    border-color: var(--cream);
+    z-index: 2;
+}
+
+.pp-card-img-wrap {
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: 3 / 4;
+    background: var(--cream);
+}
+
+.pp-card-img-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    display: block;
+}
+
+.pp-card:hover .pp-card-img-wrap img {
+    transform: scale(1.06);
+}
+
+.pp-card-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(26, 23, 20, 0);
+    display: flex;
+    align-items: flex-end;
+    padding: 1.5rem;
+    transition: background 0.3s ease;
+}
+
+.pp-card:hover .pp-card-overlay {
+    background: rgba(22, 26, 20, 0.18);
+}
+
+.pp-card-no-img {
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    background: var(--cream);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.pp-card-no-img span {
+    font-size: 0.58rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--stone);
+}
+
+.pp-card-body {
+    padding: 1.2rem 1rem 1.4rem;
+    border-top: 1px solid var(--white);
+}
+
+.pp-card-supplier {
+    font-size: 0.55rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-family: 'Jost', sans-serif;
+    margin-bottom: 0.35rem;
+    display: block;
+}
+
+.pp-card-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.05rem;
+    font-weight: 300;
+    color: var(--ink);
+    letter-spacing: 0.04em;
+    line-height: 1.3;
+    margin-bottom: 0.5rem;
+    display: block;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.pp-card-name:hover { color: var(--gold); }
+
+.pp-card-desc {
+    font-size: 0.72rem;
+    color: var(--stone);
+    line-height: 1.6;
+    margin-bottom: 0.8rem;
+    font-family: 'Jost', sans-serif;
+    font-weight: 300;
+}
+
+.pp-card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.pp-card-price {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.3rem;
+    font-weight: 300;
+    color: var(--ink);
+    letter-spacing: 0.02em;
+}
+
+.pp-card-price sup {
+    font-size: 0.65rem;
+    vertical-align: super;
+    letter-spacing: 0.05em;
+}
+
+.pp-btn-view {
+    font-size: 0.58rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--stone);
+    text-decoration: none;
+    font-family: 'Jost', sans-serif;
+    font-weight: 300;
+    border-bottom: 1px solid transparent;
+    padding-bottom: 1px;
+    transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.pp-btn-view:hover {
+    color: var(--ink);
+    border-bottom-color: var(--ink);
+}
+
+
+/* ── ABOUT SECTION ──────────────────────────────────────────── */
+
+.pp-about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5rem;
+    align-items: center;
+}
+
+.pp-about-text h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 300;
+    letter-spacing: 0.06em;
+    color: var(--ink);
+    line-height: 1.15;
+    margin-bottom: 1.8rem;
+}
+
+.pp-about-text p {
+    font-size: 0.9rem;
+    color: var(--charcoal);
+    line-height: 1.85;
+    margin-bottom: 1.2rem;
+    font-weight: 300;
+}
+
+.pp-about-panel {
+    background: var(--ink);
+    padding: 3rem 2.5rem;
+}
+
+.pp-about-panel .pp-eyebrow--gold {
+    margin-bottom: 1.8rem;
+}
+
+.pp-why-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+}
+
+.pp-why-list li {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-size: 0.78rem;
+    letter-spacing: 0.08em;
+    color: var(--stone);
+    font-family: 'Jost', sans-serif;
+    font-weight: 300;
+}
+
+.pp-why-dot {
+    flex-shrink: 0;
+    width: 4px;
+    height: 4px;
+    background: var(--gold);
+    display: block;
+}
+
+
+/* ── CATEGORIES ─────────────────────────────────────────────── */
+
+.pp-cat-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: var(--cream);
+    border: 1px solid var(--cream);
+}
+
+.pp-cat-card {
+    background: var(--ivory);
+    padding: 3rem 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.8rem;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.25s ease;
+    position: relative;
+}
+
+.pp-cat-card:hover {
+    background: var(--ink);
+}
+
+.pp-cat-icon {
+    font-size: 1.5rem;
+    color: var(--gold);
+    transition: transform 0.3s ease;
+    display: block;
+}
+
+.pp-cat-card:hover .pp-cat-icon {
+    transform: scale(1.2) rotate(15deg);
+}
+
+.pp-cat-name {
+    font-size: 0.68rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--charcoal);
+    font-family: 'Jost', sans-serif;
+    font-weight: 300;
+    transition: color 0.25s ease;
+}
+
+.pp-cat-card:hover .pp-cat-name {
+    color: var(--ivory);
+}
+
+.pp-cat-arrow {
+    font-size: 0.7rem;
+    color: var(--stone);
+    opacity: 0;
+    transform: translateX(-4px);
+    transition: opacity 0.25s ease, transform 0.25s ease, color 0.25s ease;
+}
+
+.pp-cat-card:hover .pp-cat-arrow {
+    opacity: 1;
+    transform: translateX(0);
+    color: var(--gold);
+}
+
+
+/* ── NEWSLETTER ─────────────────────────────────────────────── */
+
+.pp-newsletter-title {
+    font-family: 'Cormorant Garamond', serif !important;
+    font-size: clamp(2rem, 5vw, 3.5rem) !important;
+    font-weight: 300 !important;
+    letter-spacing: 0.1em !important;
+    color: var(--ivory) !important;
+    font-style: italic;
+    margin-bottom: 1rem;
+}
+
+.pp-newsletter-sub {
+    font-size: 0.75rem;
+    letter-spacing: 0.15em;
+    color: var(--stone);
+    text-transform: uppercase;
+    margin-bottom: 2.5rem;
+    font-weight: 300;
+}
+
+.pp-newsletter-form {
+    display: flex;
+    max-width: 480px;
+    width: 100%;
+}
+
+.pp-newsletter-input {
+    flex: 1;
+    background: rgba(248, 245, 240, 0.08);
+    border: 1px solid rgba(200, 190, 178, 0.3);
+    border-right: none;
+    color: var(--ivory);
+    font-family: 'Jost', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 300;
+    letter-spacing: 0.05em;
+    padding: 0.85rem 1.2rem;
+    outline: none;
+    transition: border-color 0.2s ease, background 0.2s ease;
+    border-radius: 0;
+    -webkit-appearance: none;
+}
+
+.pp-newsletter-input::placeholder {
+    color: var(--stone);
+    opacity: 0.7;
+}
+
+.pp-newsletter-input:focus {
+    background: rgba(248, 245, 240, 0.12);
+    border-color: var(--gold);
+}
+
+.pp-newsletter-btn {
+    background: var(--gold);
+    color: var(--ink);
+    border: 1px solid var(--gold);
+    font-family: 'Jost', sans-serif;
+    font-size: 0.62rem;
+    font-weight: 300;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    padding: 0.85rem 2rem;
+    cursor: pointer;
+    transition: background 0.25s ease, color 0.25s ease;
+    border-radius: 0;
+    white-space: nowrap;
+}
+
+.pp-newsletter-btn:hover {
+    background: var(--ivory);
+    border-color: var(--ivory);
+    color: var(--ink);
+}
+
+
+/* ── RESPONSIVE ─────────────────────────────────────────────── */
+
+@media (max-width: 1024px) {
+    .pp-featured-grid { grid-template-columns: repeat(2, 1fr); }
+    .pp-cat-grid      { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 768px) {
+    .pp-section          { padding: 3.5rem 1.5rem; }
+    .pp-about-grid       { grid-template-columns: 1fr; gap: 2.5rem; }
+    .pp-featured-grid    { grid-template-columns: 1fr; }
+    .pp-cat-grid         { grid-template-columns: repeat(2, 1fr); }
+    .pp-hero--home       { padding: 6rem 1.5rem 4rem; min-height: 60vh; }
+    .pp-newsletter-form  { flex-direction: column; }
+    .pp-newsletter-input { border-right: 1px solid rgba(200, 190, 178, 0.3); border-bottom: none; }
+    .pp-newsletter-btn   { border-top: none; }
+}
+
+@media (max-width: 480px) {
+    .pp-cat-grid { grid-template-columns: 1fr; }
+}

@@ -291,9 +291,21 @@ class AdminController extends Controller
 
     public function bestSellingChart()
     {
-        $data = Product::select('products.product_name', DB::raw('SUM(order_details.quantity) as total'))
+        $start = request('start_date');
+        $end = request('end_date');
+
+        $query = Product::select('products.product_name', DB::raw('SUM(order_details.quantity) as total'))
             ->join('order_details', 'products.product_id', '=', 'order_details.product_id')
-            ->groupBy('products.product_id', 'products.product_name')
+            ->join('orders', 'orders.order_id', '=', 'order_details.order_id');
+
+        if ($start) {
+            $query->whereDate('orders.order_date', '>=', $start);
+        }
+        if ($end) {
+            $query->whereDate('orders.order_date', '<=', $end);
+        }
+
+        $data = $query->groupBy('products.product_id', 'products.product_name')
             ->orderByDesc('total')
             ->take(10)
             ->get();
@@ -304,7 +316,35 @@ class AdminController extends Controller
             ->backgroundColor('rgba(181, 151, 90, 0.5)')
             ->color('rgba(181, 151, 90, 1)');
 
-        return view('admin.charts.best_sellers', compact('chart'));
+        // Pie chart for sales percentage
+        $totalSales = $data->sum('total');
+        $pieLabels = $data->pluck('product_name')->toArray();
+        $pieValues = $data->pluck('total')->map(function($qty) use ($totalSales) {
+            return $totalSales > 0 ? round(($qty / $totalSales) * 100, 2) : 0;
+        })->toArray();
+
+        $pieChart = new \App\Charts\ProductSalesPieChart();
+        $pieChart->labels($pieLabels);
+        $pieChart->dataset('Sales %', 'pie', $pieValues)
+            ->backgroundColor([
+                'rgba(181,151,90,0.7)', 'rgba(44,40,37,0.7)', 'rgba(201,122,122,0.7)',
+                'rgba(186,183,164,0.7)', 'rgba(200,180,140,0.7)', 'rgba(255,205,86,0.7)',
+                'rgba(54,162,235,0.7)', 'rgba(255,99,132,0.7)', 'rgba(153,102,255,0.7)', 'rgba(255,159,64,0.7)'
+            ]);
+
+        // Yearly sales chart
+        $yearlyData = Order::select(DB::raw('YEAR(order_date) as year'), DB::raw('SUM(total_amount) as total'))
+            ->groupBy(DB::raw('YEAR(order_date)'))
+            ->orderBy('year', 'asc')
+            ->get();
+
+        $yearlyChart = new \App\Charts\YearlySalesChart();
+        $yearlyChart->labels($yearlyData->pluck('year')->toArray());
+        $yearlyChart->dataset('Total Sales', 'line', $yearlyData->pluck('total')->toArray())
+            ->backgroundColor('rgba(44,40,37,0.15)')
+            ->color('rgba(44,40,37,1)');
+
+        return view('admin.charts.best_sellers', compact('chart', 'pieChart', 'yearlyChart'));
     }
 
     // ── USERS ────────────────────────────────────────────────────
@@ -363,5 +403,14 @@ class AdminController extends Controller
         $user->update($validated);
 
         return response()->json(['success' => true, 'user' => $user]);
+    }
+    public function destroyProductImage($imageId)
+    {
+        $image = \App\Models\ProductImage::findOrFail($imageId);
+
+        Storage::disk('public')->delete($image->image_path);
+        $image->delete();
+
+        return response()->json(['success' => true]);
     }
 }

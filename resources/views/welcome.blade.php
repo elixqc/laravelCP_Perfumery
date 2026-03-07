@@ -49,7 +49,7 @@
                         <a href="{{ route('products.show', $product) }}" class="pp-card-name">{{ $product->product_name }}</a>
                         <p class="pp-card-desc">{{ Str::limit($product->description, 100) }}</p>
                         <div class="pp-card-footer">
-                            <span class="pp-card-price"><sup>$</sup>{{ $priceWhole }}<sup>.{{ $priceDec }}</sup></span>
+                            <span class="pp-card-price"><sup>₱</sup>{{ $priceWhole }}<sup>.{{ $priceDec }}</sup></span>
                             <a href="{{ route('products.show', $product) }}" class="pp-btn-view">Discover →</a>
                         </div>
                     </div>

@@ -46,7 +46,7 @@
                         <div class="pp-cart-item-details">
                             <h3 class="pp-cart-item-name">{{ $item->product->product_name }}</h3>
                             <p class="pp-cart-item-desc">{{ Str::limit($item->product->description, 80) }}</p>
-                            <span class="pp-cart-item-price">${{ number_format($item->product->selling_price, 2) }}</span>
+                            <span class="pp-cart-item-price">₱{{ number_format($item->product->selling_price, 2) }}</span>
                         </div>
 
                         {{-- Quantity & Actions --}}
@@ -77,7 +77,7 @@
                         {{-- Subtotal --}}
                         <div class="pp-cart-subtotal" style="grid-column: 2 / -1;">
                             <span>Subtotal</span>
-                            <span class="pp-cart-subtotal-amount">${{ number_format($item->product->selling_price * $item->quantity, 2) }}</span>
+                            <span class="pp-cart-subtotal-amount">₱{{ number_format($item->product->selling_price * $item->quantity, 2) }}</span>
                         </div>
                     </div>
                 @endforeach
@@ -90,7 +90,7 @@
                 <div class="pp-cart-summary-rows">
                     <div class="pp-cart-summary-row">
                         <span class="pp-cart-summary-label">Subtotal ({{ $cartItems->sum('quantity') }} items)</span>
-                        <span class="pp-cart-summary-value">${{ number_format($cartItems->sum(function($item) { return $item->product->selling_price * $item->quantity; }), 2) }}</span>
+                        <span class="pp-cart-summary-value">₱{{ number_format($cartItems->sum(function($item) { return $item->product->selling_price * $item->quantity; }), 2) }}</span>
                     </div>
 
                     <div class="pp-cart-summary-row">
@@ -100,7 +100,7 @@
 
                     <div class="pp-cart-summary-row">
                         <span class="pp-cart-summary-label">Tax</span>
-                        <span class="pp-cart-summary-value">$0.00</span>
+                        <span class="pp-cart-summary-value">₱0.00</span>
                     </div>
                 </div>
 
@@ -108,7 +108,7 @@
 
                 <div class="pp-cart-total">
                     <span class="pp-cart-total-label">Total</span>
-                    <span class="pp-cart-total-value">${{ number_format($cartItems->sum(function($item) { return $item->product->selling_price * $item->quantity; }), 2) }}</span>
+                    <span class="pp-cart-total-value">₱{{ number_format($cartItems->sum(function($item) { return $item->product->selling_price * $item->quantity; }), 2) }}</span>
                 </div>
 
                 <div class="pp-cart-actions">

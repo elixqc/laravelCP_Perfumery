@@ -111,7 +111,7 @@
                             {{-- Total --}}
                             <td style="padding:1rem 1.2rem; vertical-align:middle;">
                                 <span style="font-family:'Cormorant Garamond',serif; font-size:1.1rem; font-weight:300; color:#1A1714; letter-spacing:0.02em;">
-                                    ${{ number_format($order->total_amount, 2) }}
+                                    ₱{{ number_format($order->total_amount, 2) }}
                                 </span>
                             </td>
 
