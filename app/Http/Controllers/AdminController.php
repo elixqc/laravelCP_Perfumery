@@ -53,14 +53,35 @@ class AdminController extends Controller
     public function storeProduct(Request $request)
     {
         $request->validate([
-            'product_name'   => 'required',
-            'initial_price'  => 'nullable|numeric',
-            'selling_price'  => 'nullable|numeric',
-            'stock_quantity' => 'required|integer',
+            'product_name'   => 'required|string|min:2|max:255',
+            'description'    => 'nullable|string|min:10|max:2000',
+            'initial_price'  => 'nullable|numeric|min:0',
+            'selling_price'  => 'nullable|numeric|min:0',
+            'stock_quantity' => 'required|integer|min:0',
             'category_id'    => 'required|exists:categories,category_id',
             'supplier_id'    => 'required|exists:suppliers,supplier_id',
             'images'         => 'nullable|array',
-            'images.*'       => 'image',
+            'images.*'       => 'image|mimes:jpg,jpeg,png,webp|max:4096',
+        ], [
+            'product_name.required'   => 'Product name is required.',
+            'product_name.min'        => 'Product name must be at least 2 characters.',
+            'product_name.max'        => 'Product name cannot exceed 255 characters.',
+            'description.min'         => 'Description must be at least 10 characters.',
+            'description.max'         => 'Description cannot exceed 2000 characters.',
+            'initial_price.numeric'   => 'Cost price must be a valid number.',
+            'initial_price.min'       => 'Cost price cannot be negative.',
+            'selling_price.numeric'   => 'Selling price must be a valid number.',
+            'selling_price.min'       => 'Selling price cannot be negative.',
+            'stock_quantity.required' => 'Stock quantity is required.',
+            'stock_quantity.integer'  => 'Stock quantity must be a whole number.',
+            'stock_quantity.min'      => 'Stock quantity cannot be negative.',
+            'category_id.required'   => 'Please select a category.',
+            'category_id.exists'     => 'Selected category is invalid.',
+            'supplier_id.required'   => 'Please select a supplier.',
+            'supplier_id.exists'     => 'Selected supplier is invalid.',
+            'images.*.image'         => 'Each file must be a valid image.',
+            'images.*.mimes'         => 'Images must be JPG, PNG, or WEBP.',
+            'images.*.max'           => 'Each image must not exceed 4MB.',
         ]);
 
         $data = $request->except('images');
@@ -98,14 +119,35 @@ class AdminController extends Controller
         $product = Product::findOrFail($id);
 
         $request->validate([
-            'product_name'   => 'required',
-            'initial_price'  => 'nullable|numeric',
-            'selling_price'  => 'nullable|numeric',
-            'stock_quantity' => 'required|integer',
+            'product_name'   => 'required|string|min:2|max:255',
+            'description'    => 'nullable|string|min:10|max:2000',
+            'initial_price'  => 'nullable|numeric|min:0',
+            'selling_price'  => 'nullable|numeric|min:0',
+            'stock_quantity' => 'required|integer|min:0',
             'category_id'    => 'required|exists:categories,category_id',
             'supplier_id'    => 'required|exists:suppliers,supplier_id',
             'images'         => 'nullable|array',
-            'images.*'       => 'image',
+            'images.*'       => 'image|mimes:jpg,jpeg,png,webp|max:4096',
+        ], [
+            'product_name.required'   => 'Product name is required.',
+            'product_name.min'        => 'Product name must be at least 2 characters.',
+            'product_name.max'        => 'Product name cannot exceed 255 characters.',
+            'description.min'         => 'Description must be at least 10 characters.',
+            'description.max'         => 'Description cannot exceed 2000 characters.',
+            'initial_price.numeric'   => 'Cost price must be a valid number.',
+            'initial_price.min'       => 'Cost price cannot be negative.',
+            'selling_price.numeric'   => 'Selling price must be a valid number.',
+            'selling_price.min'       => 'Selling price cannot be negative.',
+            'stock_quantity.required' => 'Stock quantity is required.',
+            'stock_quantity.integer'  => 'Stock quantity must be a whole number.',
+            'stock_quantity.min'      => 'Stock quantity cannot be negative.',
+            'category_id.required'   => 'Please select a category.',
+            'category_id.exists'     => 'Selected category is invalid.',
+            'supplier_id.required'   => 'Please select a supplier.',
+            'supplier_id.exists'     => 'Selected supplier is invalid.',
+            'images.*.image'         => 'Each file must be a valid image.',
+            'images.*.mimes'         => 'Images must be JPG, PNG, or WEBP.',
+            'images.*.max'           => 'Each image must not exceed 4MB.',
         ]);
 
         $data = $request->except('images');
@@ -296,10 +338,6 @@ class AdminController extends Controller
                 $active = $user->is_active ? '1' : '0';
                 return "<button class='pa-button pa-button--small user-toggle-active {$class}' data-user-id='{$user->user_id}' data-active='{$active}'>{$label}</button>";
             })
-            // Raw scalar values for the frontend stats bar.
-            // The 'role' and 'status' columns above return HTML strings, so
-            // json.data cannot be filtered on u.role or u.is_active directly.
-            // These two columns expose the plain values the blade JS needs.
             ->addColumn('is_active_raw', fn(User $user) => $user->is_active ? 1 : 0)
             ->addColumn('role_raw',      fn(User $user) => $user->role)
             ->rawColumns(['status', 'role', 'actions'])

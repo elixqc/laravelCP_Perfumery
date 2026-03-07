@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Imports\ProductsImport;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Models\Supplier;
 
 class ProductController extends Controller
 {
@@ -35,20 +36,40 @@ class ProductController extends Controller
 
     public function index(Request $request)
     {
-        $query = Product::with('category', 'supplier', 'productImages')->where('is_active', true);
+        $query = Product::with('productImages', 'supplier', 'category')
+            ->where('is_active', true);
 
+        // Search by name or description
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('product_name', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%");
+            });
+        }
+
+        // Filter by category
         if ($request->filled('category')) {
             $query->where('category_id', $request->category);
         }
 
-        if ($request->filled('search')) {
-            $query->where('product_name', 'like', '%' . $request->search . '%');
+        // Filter by supplier
+        if ($request->filled('supplier')) {
+            $query->where('supplier_id', $request->supplier);
         }
 
-        $products = $query->paginate(12);
-        $categories = Category::all();
+        // Sort by price: price_asc | price_desc (default: latest)
+        match ($request->sort) {
+            'price_asc'  => $query->orderBy('selling_price', 'asc'),
+            'price_desc' => $query->orderBy('selling_price', 'desc'),
+            default      => $query->orderBy('product_id', 'desc'),
+        };
 
-        return view('products.index', compact('products', 'categories'));
+        $products   = $query->paginate(12)->withQueryString();
+        $categories = Category::all();
+        $suppliers  = Supplier::all();
+
+        return view('products.index', compact('products', 'categories', 'suppliers'));
     }
 
     public function show($id)

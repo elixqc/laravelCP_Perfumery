@@ -16,35 +16,109 @@
 </section>
 
 {{-- ── FILTER BAR ── --}}
-<section class="pp-filter-wrap">
-    <form method="GET" class="pp-filter-inner">
-        <div class="pp-field">
-            <label class="pp-label">Search</label>
-            <input
-                type="text"
-                name="search"
-                value="{{ request('search') }}"
-                placeholder="Search fragrances…"
-                class="pp-input"
-            >
-        </div>
-        <div class="pp-field">
-            <label class="pp-label">Category</label>
-            <div class="pp-select-wrap">
-                <select name="category" class="pp-select">
-                    <option value="">All Categories</option>
-                    @foreach($categories ?? [] as $category)
-                        <option value="{{ $category->category_id }}" {{ request('category') == $category->category_id ? 'selected' : '' }}>
-                            {{ $category->category_name }}
-                        </option>
-                    @endforeach
-                </select>
+<section class="pf-bar">
+    <form method="GET" id="filter-form" class="pf-form">
+
+        <div class="pf-fields">
+
+            {{-- Search --}}
+            <div class="pf-field pf-field--search">
+                <label class="pf-label">Search</label>
+                <input type="text" name="search"
+                       value="{{ request('search') }}"
+                       placeholder="Fragrance name…"
+                       class="pf-input">
             </div>
+
+            {{-- Category --}}
+            <div class="pf-field">
+                <label class="pf-label">Category</label>
+                <div class="pf-select-wrap">
+                    <select name="category" class="pf-select">
+                        <option value="">All Categories</option>
+                        @foreach($categories ?? [] as $cat)
+                            <option value="{{ $cat->category_id }}"
+                                {{ request('category') == $cat->category_id ? 'selected' : '' }}>
+                                {{ $cat->category_name }}
+                            </option>
+                        @endforeach
+                    </select>
+                    <span class="pf-chevron">▾</span>
+                </div>
+            </div>
+
+            {{-- Supplier / Maison --}}
+            <div class="pf-field">
+                <label class="pf-label">Maison</label>
+                <div class="pf-select-wrap">
+                    <select name="supplier" class="pf-select">
+                        <option value="">All Maisons</option>
+                        @foreach($suppliers ?? [] as $sup)
+                            <option value="{{ $sup->supplier_id }}"
+                                {{ request('supplier') == $sup->supplier_id ? 'selected' : '' }}>
+                                {{ $sup->supplier_name }}
+                            </option>
+                        @endforeach
+                    </select>
+                    <span class="pf-chevron">▾</span>
+                </div>
+            </div>
+
+            {{-- Sort by price --}}
+            <div class="pf-field">
+                <label class="pf-label">Price</label>
+                <div class="pf-select-wrap">
+                    <select name="sort" class="pf-select">
+                        <option value=""           {{ !request('sort')                ? 'selected' : '' }}>Default Order</option>
+                        <option value="price_asc"  {{ request('sort') === 'price_asc'  ? 'selected' : '' }}>Low to High</option>
+                        <option value="price_desc" {{ request('sort') === 'price_desc' ? 'selected' : '' }}>High to Low</option>
+                    </select>
+                    <span class="pf-chevron">▾</span>
+                </div>
+            </div>
+
+            {{-- Actions --}}
+            <div class="pf-field pf-field--actions">
+                <label class="pf-label">&nbsp;</label>
+                <div style="display:flex; gap:0.5rem;">
+                    <button type="submit" class="pf-btn-submit">Search</button>
+                    @if(request()->hasAny(['search','category','supplier','sort']))
+                        <a href="{{ route('products.index') }}" class="pf-btn-clear">Clear</a>
+                    @endif
+                </div>
+            </div>
+
         </div>
-        <div class="pp-field">
-            <label class="pp-label">&nbsp;</label>
-            <button type="submit" class="pp-btn-search">Search</button>
-        </div>
+
+        {{-- Active filter tags --}}
+        @php
+            $activeFilters = array_filter([
+                'search'   => request('search'),
+                'category' => request('category')
+                    ? ($categories->firstWhere('category_id', request('category'))?->category_name ?? null)
+                    : null,
+                'supplier' => request('supplier')
+                    ? ($suppliers->firstWhere('supplier_id', request('supplier'))?->supplier_name ?? null)
+                    : null,
+                'sort' => match(request('sort')) {
+                    'price_asc'  => 'Price: Low → High',
+                    'price_desc' => 'Price: High → Low',
+                    default      => null,
+                },
+            ]);
+        @endphp
+
+        @if(count($activeFilters))
+            <div class="pf-tags">
+                <span class="pf-tags-label">Filtering by:</span>
+                @foreach($activeFilters as $key => $label)
+                    <a href="{{ route('products.index', request()->except($key)) }}" class="pf-tag">
+                        {{ $label }}&ensp;✕
+                    </a>
+                @endforeach
+            </div>
+        @endif
+
     </form>
 </section>
 
@@ -122,5 +196,184 @@
 
     </div>
 </section>
+
+<style>
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   FILTER BAR
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.pf-bar {
+    background: #F8F5F0;
+    border-top: 1px solid #EDE8DF;
+    border-bottom: 1px solid #EDE8DF;
+    padding: 1.75rem 2.5rem;
+}
+
+.pf-form {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.pf-fields {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.25rem;
+    align-items: flex-end;
+}
+
+/* Field wrapper */
+.pf-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    flex: 1;
+    min-width: 140px;
+}
+.pf-field--search { flex: 2; min-width: 200px; }
+.pf-field--actions { flex: 0 0 auto; min-width: unset; }
+
+/* Label */
+.pf-label {
+    font-family: 'Jost', sans-serif;
+    font-size: 0.6rem;
+    font-weight: 400;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: #B0A898;
+}
+
+/* Text input */
+.pf-input {
+    background: #FFFFFF;
+    border: 1.5px solid #D6D0C8;
+    color: #1A1714;
+    font-family: 'Jost', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 300;
+    padding: 0.72rem 1rem;
+    outline: none;
+    border-radius: 2px;
+    transition: border-color 0.2s;
+    width: 100%;
+    box-sizing: border-box;
+}
+.pf-input::placeholder { color: #C8BEB2; }
+.pf-input:focus { border-color: #B5975A; }
+
+/* Select wrapper */
+.pf-select-wrap {
+    position: relative;
+    width: 100%;
+}
+.pf-select {
+    background: #FFFFFF;
+    border: 1.5px solid #D6D0C8;
+    color: #1A1714;
+    font-family: 'Jost', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 300;
+    padding: 0.72rem 2.4rem 0.72rem 1rem;
+    outline: none;
+    width: 100%;
+    appearance: none;
+    -webkit-appearance: none;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: border-color 0.2s;
+    box-sizing: border-box;
+}
+.pf-select:focus { border-color: #B5975A; }
+.pf-chevron {
+    position: absolute;
+    right: 0.9rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #B0A898;
+    font-size: 0.72rem;
+    pointer-events: none;
+}
+
+/* Submit button */
+.pf-btn-submit {
+    background: #1A1714;
+    color: #F8F5F0;
+    border: 1.5px solid #1A1714;
+    font-family: 'Jost', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 400;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    padding: 0.75rem 1.75rem;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: background 0.25s, border-color 0.25s, color 0.25s;
+    white-space: nowrap;
+}
+.pf-btn-submit:hover {
+    background: #B5975A;
+    border-color: #B5975A;
+    color: #1A1714;
+}
+
+/* Clear button */
+.pf-btn-clear {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.75rem 1.2rem;
+    font-family: 'Jost', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 400;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #8C8078;
+    border: 1.5px solid #D6D0C8;
+    background: transparent;
+    text-decoration: none;
+    border-radius: 2px;
+    transition: border-color 0.2s, color 0.2s;
+    white-space: nowrap;
+}
+.pf-btn-clear:hover { border-color: #C97A7A; color: #C97A7A; }
+
+/* Active filter tags */
+.pf-tags {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1.1rem;
+    padding-top: 1.1rem;
+    border-top: 1px solid #EDE8DF;
+}
+.pf-tags-label {
+    font-family: 'Jost', sans-serif;
+    font-size: 0.6rem;
+    font-weight: 400;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #B0A898;
+    margin-right: 0.2rem;
+}
+.pf-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.3rem 0.8rem;
+    background: #FFFFFF;
+    border: 1px solid #D6D0C8;
+    font-family: 'Jost', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 300;
+    color: #2C2825;
+    text-decoration: none;
+    border-radius: 2px;
+    transition: background 0.2s, border-color 0.2s, color 0.2s;
+    letter-spacing: 0.02em;
+}
+.pf-tag:hover {
+    background: #FDF0F0;
+    border-color: #C97A7A;
+    color: #8B3A3A;
+}
+</style>
 
 @endsection
