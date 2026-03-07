@@ -19,11 +19,11 @@ class ProductReview extends Model
         'user_id',
         'rating',
         'review_text',
-        'review_date',
+        'date_reviewed',
     ];
 
     protected $casts = [
-        'review_date' => 'datetime',
+        'date_reviewed' => 'datetime',
     ];
 
     // Relationships

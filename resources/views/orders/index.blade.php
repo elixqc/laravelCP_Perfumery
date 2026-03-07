@@ -1,23 +1,85 @@
 @extends('layouts.app')
 
+@section('title', 'My Orders — Prestige Perfumery')
+
 @section('content')
-<div class="container mx-auto">
-    <h1 class="text-3xl font-bold mb-6">My Orders</h1>
+
+<div class="pp-orders-wrap">
+
+    {{-- Header --}}
+    <div class="pp-orders-header">
+        <h1 class="pp-orders-title">My Orders</h1>
+        <span class="pp-orders-subtitle">Order History</span>
+    </div>
 
     @forelse($orders as $order)
-        <div class="border rounded-lg p-4 mb-4">
-            <div class="flex justify-between items-center mb-2">
-                <h2 class="text-xl font-semibold">Order #{{ $order->order_id }}</h2>
-                <span class="px-2 py-1 rounded {{ $order->order_status === 'pending' ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800' }}">
-                    {{ ucfirst($order->order_status) }}
-                </span>
+        <div class="pp-orders-grid">
+            <div class="pp-order-card">
+                {{-- Card Header --}}
+                <div class="pp-order-card-header">
+                    <div>
+                        <span class="pp-order-card-id">Order #{{ $order->order_id }}</span>
+                        <h2 class="pp-order-card-title">
+                            @if($order->user->username)
+                                {{ $order->user->username }}'s Order
+                            @else
+                                Order Details
+                            @endif
+                        </h2>
+                    </div>
+                    <span class="pp-order-status-badge {{ strtolower($order->order_status) }}">
+                        {{ ucfirst($order->order_status) }}
+                    </span>
+                </div>
+
+                {{-- Card Body --}}
+                <div class="pp-order-card-body">
+                    <div class="pp-order-card-detail">
+                        <span class="pp-order-card-detail-label">Order Date</span>
+                        <span class="pp-order-card-detail-value">
+                            {{ $order->order_date->format('M d, Y') }}
+                        </span>
+                    </div>
+
+                    <div class="pp-order-card-detail">
+                        <span class="pp-order-card-detail-label">Items</span>
+                        <span class="pp-order-card-detail-value">
+                            {{ $order->orderDetails->count() }} {{ $order->orderDetails->count() === 1 ? 'item' : 'items' }}
+                        </span>
+                    </div>
+
+                    <div class="pp-order-card-detail">
+                        <span class="pp-order-card-detail-label">Total</span>
+                        <span class="pp-order-card-detail-value price">
+                            ${{ number_format($order->total_amount ?? 0, 2) }}
+                        </span>
+                    </div>
+                </div>
+
+                {{-- Card Footer --}}
+                <div class="pp-order-card-footer">
+                    <span class="pp-order-card-items">
+                        @php
+                            $items = $order->orderDetails->pluck('product.product_name')->join(', ', ' • ');
+                        @endphp
+                        {{ Str::limit($items, 60) }}
+                    </span>
+                    <a href="{{ route('orders.show', $order->order_id) }}" class="pp-order-card-link">
+                        View Details
+                    </a>
+                </div>
             </div>
-            <p>Date: {{ $order->order_date->format('M d, Y') }}</p>
-            <p>Total: ${{ $order->calculated_total }}</p>
-            <a href="{{ route('orders.show', $order->order_id) }}" class="text-blue-500">View Details</a>
         </div>
     @empty
-        <p>You have no orders yet.</p>
+        {{-- Empty State --}}
+        <div class="pp-orders-empty">
+            <div class="pp-orders-empty-icon">📦</div>
+            <h2 class="pp-orders-empty-title">No Orders Yet</h2>
+            <p class="pp-orders-empty-text">You haven't placed any orders. Browse our collection and start shopping!</p>
+            <a href="{{ route('products.index') }}" class="pp-btn-primary" style="display: inline-block;">Browse Collection</a>
+        </div>
     @endforelse
+
 </div>
+
 @endsection

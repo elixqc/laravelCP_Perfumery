@@ -25,6 +25,7 @@ return new class extends Migration
             $table->string('image_path', 255)->nullable();
             $table->string('variant', 50)->nullable();
             $table->boolean('is_active')->default(true);
+            $table->softDeletes();
         });
     }
 

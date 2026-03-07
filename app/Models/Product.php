@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Product extends Model
 {
-    use HasFactory;
+    use HasFactory, \Illuminate\Database\Eloquent\SoftDeletes;
 
     public $timestamps = false;
 
@@ -17,7 +17,8 @@ class Product extends Model
     protected $fillable = [
         'product_name',
         'description',
-        'price',
+        'initial_price',
+        'selling_price',
         'stock_quantity',
         'image_path',
         'variant',
@@ -27,9 +28,12 @@ class Product extends Model
     ];
 
     protected $casts = [
-        'price' => 'decimal:2',
+        'initial_price' => 'decimal:2',
+        'selling_price' => 'decimal:2',
         'is_active' => 'boolean',
     ];
+
+    protected $dates = ['deleted_at'];
 
     // Relationships
     public function category()

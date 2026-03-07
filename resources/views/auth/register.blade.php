@@ -13,12 +13,12 @@
         </div>
 
         <div class="pp-auth-body">
-            <form method="POST" action="{{ route('register') }}">
+            <form method="POST" action="{{ route('register') }}" enctype="multipart/form-data">
                 @csrf
 
                 {{-- Username --}}
                 <div class="pp-auth-field">
-                    <label for="username" class="pp-auth-label">Username</label>
+                    <label for="username" class="pp-auth-label">{{ __('Username') }}</label>
                     <input
                         id="username"
                         type="text"
@@ -37,7 +37,7 @@
 
                 {{-- Full Name --}}
                 <div class="pp-auth-field">
-                    <label for="full_name" class="pp-auth-label">Full Name</label>
+                    <label for="full_name" class="pp-auth-label">{{ __('Full Name') }}</label>
                     <input
                         id="full_name"
                         type="text"
@@ -53,9 +53,41 @@
                     @enderror
                 </div>
 
+                {{-- Contact Number --}}
+                <div class="pp-auth-field">
+                    <label for="contact_number" class="pp-auth-label">{{ __('Contact Number') }}</label>
+                    <input
+                        id="contact_number"
+                        type="text"
+                        name="contact_number"
+                        value="{{ old('contact_number') }}"
+                        placeholder="e.g. 0917xxxxxxx"
+                        class="pp-auth-input @error('contact_number') is-invalid @enderror"
+                        autocomplete="tel"
+                    >
+                    @error('contact_number')
+                        <span class="pp-auth-error" role="alert">{{ $message }}</span>
+                    @enderror
+                </div>
+
+                {{-- Address --}}
+                <div class="pp-auth-field">
+                    <label for="address" class="pp-auth-label">{{ __('Address') }}</label>
+                    <textarea
+                        id="address"
+                        name="address"
+                        placeholder="Your address"
+                        class="pp-auth-input @error('address') is-invalid @enderror"
+                        rows="2"
+                    >{{ old('address') }}</textarea>
+                    @error('address')
+                        <span class="pp-auth-error" role="alert">{{ $message }}</span>
+                    @enderror
+                </div>
+
                 {{-- Email --}}
                 <div class="pp-auth-field">
-                    <label for="email" class="pp-auth-label">Email Address</label>
+                    <label for="email" class="pp-auth-label">{{ __('Email Address') }}</label>
                     <input
                         id="email"
                         type="email"
@@ -73,7 +105,7 @@
 
                 {{-- Password --}}
                 <div class="pp-auth-field">
-                    <label for="password" class="pp-auth-label">Password</label>
+                    <label for="password" class="pp-auth-label">{{ __('Password') }}</label>
                     <input
                         id="password"
                         type="password"
@@ -90,7 +122,7 @@
 
                 {{-- Confirm Password --}}
                 <div class="pp-auth-field">
-                    <label for="password-confirm" class="pp-auth-label">Confirm Password</label>
+                    <label for="password-confirm" class="pp-auth-label">{{ __('Confirm Password') }}</label>
                     <input
                         id="password-confirm"
                         type="password"
@@ -104,15 +136,34 @@
 
                 <div class="pp-auth-divider"></div>
 
+                {{-- Profile Picture --}}
+                <div class="pp-auth-field">
+                    <label for="profile_picture" class="pp-auth-label">{{ __('Profile Picture') }} <span style="color:var(--stone);font-size:0.85rem;">(Optional)</span></label>
+                    <input
+                        id="profile_picture"
+                        type="file"
+                        name="profile_picture"
+                        accept="image/*"
+                        class="pp-auth-input @error('profile_picture') is-invalid @enderror"
+                    >
+                    @error('profile_picture')
+                        <span class="pp-auth-error" role="alert">{{ $message }}</span>
+                    @enderror
+                </div>
+
                 <button type="submit" class="pp-auth-submit">
-                    Create Account
+                    {{ __('Create Account') }}
                 </button>
+
+                <p class="pp-auth-note" style="margin-top: 1rem; font-size: 0.9rem; color: var(--stone);">
+                    {{ __('After registering, you will receive an email with a verification link. You must verify your email before you can sign in.') }}
+                </p>
 
             </form>
 
             <p class="pp-auth-footer">
-                Already have an account?
-                <a href="{{ route('login') }}">Sign in</a>
+                {{ __('Already have an account?') }}
+                <a href="{{ route('login') }}">{{ __('Sign in') }}</a>
             </p>
         </div>
 

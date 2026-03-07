@@ -1,111 +1,168 @@
 @extends('layouts.admin')
 
+@section('title', 'Edit Supplier — Prestige Admin')
+
 @section('content')
-<div class="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black flex items-center justify-center px-4 py-8">
-    <div class="max-w-2xl w-full">
-        <!-- Luxury Header -->
-        <div class="text-center mb-8">
-            <h1 class="text-4xl font-serif font-bold text-gold-400 mb-2 tracking-wider">EDIT SUPPLIER</h1>
-            <p class="text-gold-300 text-sm font-light tracking-widest uppercase">Update Supply Partner Information</p>
+<div class="pa-page">
+
+    {{-- ── Page Header ── --}}
+    <div class="pa-page-header">
+        <div>
+            <span class="pa-page-eyebrow">Suppliers</span>
+            <h1 class="pa-page-title">Edit Supplier</h1>
         </div>
-
-        <!-- Form Card -->
-        <div class="bg-black/40 backdrop-blur-sm border border-gold-400/20 rounded-lg p-8 shadow-2xl">
-            <form method="POST" action="{{ route('admin.suppliers.update', $supplier->supplier_id) }}" class="space-y-6">
-                @csrf
-                @method('PATCH')
-
-                <!-- Company Name -->
-                <div>
-                    <label for="company_name" class="block text-sm font-medium text-gold-300 mb-2">Company Name</label>
-                    <input type="text"
-                           name="company_name"
-                           id="company_name"
-                           value="{{ old('company_name', $supplier->company_name) }}"
-                           class="w-full bg-gray-800/50 border border-gold-400/30 rounded-md px-4 py-3 text-white placeholder-gold-400/50 focus:outline-none focus:ring-2 focus:ring-gold-400 focus:border-transparent transition-all duration-200"
-                           placeholder="Enter company name"
-                           required>
-                    @error('company_name')
-                        <p class="text-red-400 text-sm mt-1">{{ $message }}</p>
-                    @enderror
-                </div>
-
-                <!-- Contact Person -->
-                <div>
-                    <label for="contact_person" class="block text-sm font-medium text-gold-300 mb-2">Contact Person</label>
-                    <input type="text"
-                           name="contact_person"
-                           id="contact_person"
-                           value="{{ old('contact_person', $supplier->contact_person) }}"
-                           class="w-full bg-gray-800/50 border border-gold-400/30 rounded-md px-4 py-3 text-white placeholder-gold-400/50 focus:outline-none focus:ring-2 focus:ring-gold-400 focus:border-transparent transition-all duration-200"
-                           placeholder="Enter contact person name"
-                           required>
-                    @error('contact_person')
-                        <p class="text-red-400 text-sm mt-1">{{ $message }}</p>
-                    @enderror
-                </div>
-
-                <!-- Email -->
-                <div>
-                    <label for="email" class="block text-sm font-medium text-gold-300 mb-2">Email Address</label>
-                    <input type="email"
-                           name="email"
-                           id="email"
-                           value="{{ old('email', $supplier->email) }}"
-                           class="w-full bg-gray-800/50 border border-gold-400/30 rounded-md px-4 py-3 text-white placeholder-gold-400/50 focus:outline-none focus:ring-2 focus:ring-gold-400 focus:border-transparent transition-all duration-200"
-                           placeholder="supplier@company.com"
-                           required>
-                    @error('email')
-                        <p class="text-red-400 text-sm mt-1">{{ $message }}</p>
-                    @enderror
-                </div>
-
-                <!-- Phone -->
-                <div>
-                    <label for="phone" class="block text-sm font-medium text-gold-300 mb-2">Phone Number</label>
-                    <input type="text"
-                           name="phone"
-                           id="phone"
-                           value="{{ old('phone', $supplier->phone) }}"
-                           class="w-full bg-gray-800/50 border border-gold-400/30 rounded-md px-4 py-3 text-white placeholder-gold-400/50 focus:outline-none focus:ring-2 focus:ring-gold-400 focus:border-transparent transition-all duration-200"
-                           placeholder="+1 (555) 123-4567"
-                           required>
-                    @error('phone')
-                        <p class="text-red-400 text-sm mt-1">{{ $message }}</p>
-                    @enderror
-                </div>
-
-                <!-- Address -->
-                <div>
-                    <label for="address" class="block text-sm font-medium text-gold-300 mb-2">Address</label>
-                    <textarea name="address"
-                              id="address"
-                              rows="4"
-                              class="w-full bg-gray-800/50 border border-gold-400/30 rounded-md px-4 py-3 text-white placeholder-gold-400/50 focus:outline-none focus:ring-2 focus:ring-gold-400 focus:border-transparent transition-all duration-200 resize-none"
-                              placeholder="Enter supplier address">{{ old('address', $supplier->address) }}</textarea>
-                    @error('address')
-                        <p class="text-red-400 text-sm mt-1">{{ $message }}</p>
-                    @enderror
-                </div>
-
-                <!-- Buttons -->
-                <div class="flex space-x-4 pt-4">
-                    <a href="{{ route('admin.suppliers.index') }}"
-                       class="flex-1 bg-gray-700 hover:bg-gray-600 text-white font-semibold py-3 px-4 rounded-md transition-all duration-200 text-center">
-                        Cancel
-                    </a>
-                    <button type="submit"
-                            class="flex-1 bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-600 hover:to-gold-700 text-black font-semibold py-3 px-4 rounded-md transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-gold-400/25">
-                        Update Supplier
-                    </button>
-                </div>
-            </form>
-        </div>
-
-        <!-- Footer Text -->
-        <div class="text-center mt-8">
-            <p class="text-gold-400/60 text-xs tracking-wider">MAINTAINING LUXURY PARTNERSHIPS</p>
-        </div>
+        <a href="{{ route('admin.suppliers.index') }}"
+           style="font-size:0.85rem; letter-spacing:0.05em; text-transform:none; font-family:'Jost',sans-serif; font-weight:400; color:#5A524A; text-decoration:none; border-bottom:1px solid transparent; padding-bottom:1px; transition:color 0.2s, border-color 0.2s;"
+           onmouseover="this.style.color='#B5975A'; this.style.borderBottomColor='#B5975A'"
+           onmouseout="this.style.color='#5A524A'; this.style.borderBottomColor='transparent'">
+            ← Back to Suppliers
+        </a>
     </div>
+
+    {{-- ── Centered Form ── --}}
+    <div style="max-width:700px; margin:0 auto; width:100%;">
+        <form method="POST" action="{{ route('admin.suppliers.update', $supplier->supplier_id) }}" enctype="multipart/form-data">
+            @csrf
+            @method('PATCH')
+
+            {{-- ── Section: Supplier Details ── --}}
+            <div style="margin-bottom:2rem;">
+                <p style="font-size:0.7rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--gold); font-family:'Jost',sans-serif; font-weight:400; padding-bottom:0.6rem; border-bottom:1px solid var(--cream); margin-bottom:1.5rem;">
+                    Supplier Information
+                </p>
+
+                <div style="background:#FDFBF8; border:1px solid #D6D0C8; padding:2rem; display:flex; flex-direction:column; gap:1.5rem;">
+
+                    {{-- Company Name --}}
+                    <div style="display:flex; flex-direction:column; gap:0.5rem;">
+                        <label for="company_name" style="font-size:0.8rem; font-weight:500; color:#2C2825; font-family:'Jost',sans-serif;">
+                            Company Name <span style="color:#C97A7A;">*</span>
+                        </label>
+                        <input type="text"
+                               name="company_name"
+                               id="company_name"
+                               value="{{ old('company_name', $supplier->company_name) }}"
+                               required
+                               placeholder="e.g. Maison Fragrance Co."
+                               style="background:#fff; border:1.5px solid {{ $errors->has('company_name') ? '#C97A7A' : '#B0A898' }}; color:#1A1714; font-family:'Jost',sans-serif; font-weight:400; font-size:0.95rem; padding:0.75rem 1rem; outline:none; width:100%; transition:border-color 0.2s; border-radius:2px;"
+                               onfocus="this.style.borderColor='#B5975A'"
+                               onblur="this.style.borderColor='{{ $errors->has('company_name') ? '#C97A7A' : '#B0A898' }}'">
+                        @error('company_name')
+                            <span style="font-size:0.78rem; color:#8B3A3A; font-family:'Jost',sans-serif;">{{ $message }}</span>
+                        @enderror
+                    </div>
+
+                    {{-- Contact Person --}}
+                    <div style="display:flex; flex-direction:column; gap:0.5rem;">
+                        <label for="contact_person" style="font-size:0.8rem; font-weight:500; color:#2C2825; font-family:'Jost',sans-serif;">
+                            Contact Person <span style="color:#C97A7A;">*</span>
+                        </label>
+                        <input type="text"
+                               name="contact_person"
+                               id="contact_person"
+                               value="{{ old('contact_person', $supplier->contact_person) }}"
+                               required
+                               placeholder="e.g. Jean-Pierre Moreau"
+                               style="background:#fff; border:1.5px solid {{ $errors->has('contact_person') ? '#C97A7A' : '#B0A898' }}; color:#1A1714; font-family:'Jost',sans-serif; font-weight:400; font-size:0.95rem; padding:0.75rem 1rem; outline:none; width:100%; transition:border-color 0.2s; border-radius:2px;"
+                               onfocus="this.style.borderColor='#B5975A'"
+                               onblur="this.style.borderColor='{{ $errors->has('contact_person') ? '#C97A7A' : '#B0A898' }}'">
+                        @error('contact_person')
+                            <span style="font-size:0.78rem; color:#8B3A3A; font-family:'Jost',sans-serif;">{{ $message }}</span>
+                        @enderror
+                    </div>
+
+                </div>
+            </div>
+
+            {{-- ── Section: Contact Details ── --}}
+            <div style="margin-bottom:2rem;">
+                <p style="font-size:0.7rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--gold); font-family:'Jost',sans-serif; font-weight:400; padding-bottom:0.6rem; border-bottom:1px solid var(--cream); margin-bottom:1.5rem;">
+                    Contact Details
+                </p>
+
+                <div style="background:#FDFBF8; border:1px solid #D6D0C8; padding:2rem; display:flex; flex-direction:column; gap:1.5rem;">
+
+                    {{-- Email + Phone side by side --}}
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem;">
+
+                        {{-- Email --}}
+                        <div style="display:flex; flex-direction:column; gap:0.5rem;">
+                            <label for="email" style="font-size:0.8rem; font-weight:500; color:#2C2825; font-family:'Jost',sans-serif;">
+                                Email Address <span style="color:#C97A7A;">*</span>
+                            </label>
+                            <input type="email"
+                                   name="email"
+                                   id="email"
+                                   value="{{ old('email', $supplier->email) }}"
+                                   required
+                                   placeholder="contact@supplier.com"
+                                   style="background:#fff; border:1.5px solid {{ $errors->has('email') ? '#C97A7A' : '#B0A898' }}; color:#1A1714; font-family:'Jost',sans-serif; font-weight:400; font-size:0.95rem; padding:0.75rem 1rem; outline:none; width:100%; transition:border-color 0.2s; border-radius:2px;"
+                                   onfocus="this.style.borderColor='#B5975A'"
+                                   onblur="this.style.borderColor='{{ $errors->has('email') ? '#C97A7A' : '#B0A898' }}'">
+                            @error('email')
+                                <span style="font-size:0.78rem; color:#8B3A3A; font-family:'Jost',sans-serif;">{{ $message }}</span>
+                            @enderror
+                        </div>
+
+                        {{-- Phone --}}
+                        <div style="display:flex; flex-direction:column; gap:0.5rem;">
+                            <label for="phone" style="font-size:0.8rem; font-weight:500; color:#2C2825; font-family:'Jost',sans-serif;">
+                                Phone Number <span style="color:#C97A7A;">*</span>
+                            </label>
+                            <input type="text"
+                                   name="phone"
+                                   id="phone"
+                                   value="{{ old('phone', $supplier->phone) }}"
+                                   required
+                                   placeholder="+1 (555) 000-0000"
+                                   style="background:#fff; border:1.5px solid {{ $errors->has('phone') ? '#C97A7A' : '#B0A898' }}; color:#1A1714; font-family:'Jost',sans-serif; font-weight:400; font-size:0.95rem; padding:0.75rem 1rem; outline:none; width:100%; transition:border-color 0.2s; border-radius:2px;"
+                                   onfocus="this.style.borderColor='#B5975A'"
+                                   onblur="this.style.borderColor='{{ $errors->has('phone') ? '#C97A7A' : '#B0A898' }}'">
+                            @error('phone')
+                                <span style="font-size:0.78rem; color:#8B3A3A; font-family:'Jost',sans-serif;">{{ $message }}</span>
+                            @enderror
+                        </div>
+
+                    </div>
+
+                    {{-- Address --}}
+                    <div style="display:flex; flex-direction:column; gap:0.5rem;">
+                        <label for="address" style="font-size:0.8rem; font-weight:500; color:#2C2825; font-family:'Jost',sans-serif;">
+                            Address
+                        </label>
+                        <textarea name="address"
+                                  id="address"
+                                  rows="4"
+                                  placeholder="Enter supplier address"
+                                  style="background:#fff; border:1.5px solid {{ $errors->has('address') ? '#C97A7A' : '#B0A898' }}; color:#1A1714; font-family:'Jost',sans-serif; font-weight:400; font-size:0.95rem; padding:0.75rem 1rem; outline:none; width:100%; resize:vertical; min-height:110px; transition:border-color 0.2s; border-radius:2px;"
+                                  onfocus="this.style.borderColor='#B5975A'"
+                                  onblur="this.style.borderColor='{{ $errors->has('address') ? '#C97A7A' : '#B0A898' }}'">{{ old('address', $supplier->address) }}</textarea>
+                        @error('address')
+                            <span style="font-size:0.78rem; color:#8B3A3A; font-family:'Jost',sans-serif;">{{ $message }}</span>
+                        @enderror
+                    </div>
+
+                </div>
+            </div>
+
+            {{-- ── Actions ── --}}
+            <div style="display:flex; align-items:center; gap:1rem; padding-top:1.5rem; border-top:1px solid #E8E2D9;">
+                <button type="submit"
+                        style="background:#2C2825; color:#F8F5F0; border:none; font-family:'Jost',sans-serif; font-size:0.88rem; font-weight:500; letter-spacing:0.08em; text-transform:uppercase; padding:0.85rem 2.5rem; cursor:pointer; transition:background 0.25s, color 0.25s; border-radius:2px;"
+                        onmouseover="this.style.background='#B5975A'; this.style.color='#1A1714'"
+                        onmouseout="this.style.background='#2C2825'; this.style.color='#F8F5F0'">
+                    Update Supplier
+                </button>
+                <a href="{{ route('admin.suppliers.index') }}"
+                   style="background:transparent; color:#5A524A; border:1.5px solid #B0A898; font-family:'Jost',sans-serif; font-size:0.88rem; font-weight:400; letter-spacing:0.05em; text-transform:uppercase; padding:0.82rem 2rem; text-decoration:none; transition:border-color 0.25s, color 0.25s; display:inline-block; border-radius:2px;"
+                   onmouseover="this.style.borderColor='#B5975A'; this.style.color='#B5975A'"
+                   onmouseout="this.style.borderColor='#B0A898'; this.style.color='#5A524A'">
+                    Cancel
+                </a>
+            </div>
+
+        </form>
+    </div>
+
 </div>
 @endsection

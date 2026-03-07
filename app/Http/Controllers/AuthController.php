@@ -28,7 +28,21 @@ class AuthController extends Controller
 
         if (Auth::attempt(['email' => $request->email, 'password' => $request->password, 'is_active' => true])) {
             $request->session()->regenerate();
-            return redirect()->intended('/');
+
+            // Redirect based on user role
+            $user = Auth::user();
+
+            // Only allow access after email verification
+            if (! $user->hasVerifiedEmail()) {
+                return redirect()->route('verification.notice')
+                    ->with('warning', 'Please verify your email address before continuing.');
+            }
+
+            if ($user->role === 'admin') {
+                return redirect()->route('admin.dashboard');
+            }
+
+            return redirect()->route('orders.index');
         }
 
         return back()->withErrors(['email' => 'Invalid credentials'])->withInput();
@@ -42,32 +56,42 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'username' => 'required|unique:users',
-            'full_name' => 'required',
-            'email' => 'required|email|unique:users',
-            'password' => 'required|min:6|confirmed',
-            'contact_number' => 'nullable',
-            'address' => 'nullable',
+            'username'        => 'required|unique:users',
+            'full_name'       => 'required',
+            'email'           => 'required|email|unique:users',
+            'password'        => 'required|min:6|confirmed',
+            'contact_number'  => 'nullable',
+            'address'         => 'nullable',
+            'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
         ]);
 
         if ($validator->fails()) {
             return back()->withErrors($validator)->withInput();
         }
 
+        // Handle profile picture upload
+        $profilePicturePath = null;
+        if ($request->hasFile('profile_picture')) {
+            $profilePicturePath = $request->file('profile_picture')->store('profile_pictures', 'public');
+        }
+
         $user = User::create([
-            'username' => $request->username,
-            'full_name' => $request->full_name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'role' => 'customer',
-            'contact_number' => $request->contact_number,
-            'address' => $request->address,
-            'is_active' => true,
+            'username'        => $request->username,
+            'full_name'       => $request->full_name,
+            'email'           => $request->email,
+            'password'        => Hash::make($request->password),
+            'role'            => 'customer',
+            'contact_number'  => $request->contact_number,
+            'address'         => $request->address,
+            'is_active'       => true,
+            'profile_picture' => $profilePicturePath,
         ]);
 
         Auth::login($user);
 
-        return redirect('/');
+        $user->sendEmailVerificationNotification();
+
+        return redirect()->route('verification.notice');
     }
 
     public function logout(Request $request)

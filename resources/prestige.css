@@ -446,7 +446,7 @@ footer {
 
 /* Product grid */
 .pp-grid-wrap {
-    background: var(--ivory);
+    background: var(--white);
     padding: 4rem 2.5rem 6rem;
 }
 
@@ -838,29 +838,12 @@ footer {
 
 /* ── 12. HOME HERO ──────────────────────────────────────────── */
 .pp-hero--home {
-    position: relative;
-    background: url('/images/home-hero.png') center/cover no-repeat;
     padding: 9rem 2.5rem 7rem;
     min-height: 80vh;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    overflow: hidden;
-}
-
-.pp-hero--home::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.45));
-    z-index: 0;
-    pointer-events: none;
-}
-
-.pp-hero--home > * {
-    position: relative;
-    z-index: 1;
 }
 
 .pp-hero--home h1 {

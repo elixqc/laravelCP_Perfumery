@@ -67,7 +67,7 @@
                             ? asset('storage/' . $firstImage->image_path)
                             : ($product->image_path ? asset('storage/' . $product->image_path) : null);
 
-                        [$priceWhole, $priceDec] = explode('.', number_format($product->price, 2));
+                        [$priceWhole, $priceDec] = explode('.', number_format($product->selling_price, 2));
                     @endphp
 
                     <article class="pp-card">

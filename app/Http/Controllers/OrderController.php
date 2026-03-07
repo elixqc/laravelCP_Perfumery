@@ -24,7 +24,7 @@ class OrderController extends Controller
         }
 
         $total = $cartItems->sum(function ($item) {
-            return $item->quantity * $item->product->price;
+            return $item->quantity * $item->product->selling_price;
         });
 
         return view('orders.checkout', compact('cartItems', 'total'));
@@ -44,7 +44,7 @@ class OrderController extends Controller
         }
 
         $total = $cartItems->sum(function ($item) {
-            return $item->quantity * $item->product->price;
+            return $item->quantity * $item->product->selling_price;
         });
 
         DB::transaction(function () use ($request, $cartItems, $total) {
@@ -61,7 +61,7 @@ class OrderController extends Controller
                     'order_id' => $order->order_id,
                     'product_id' => $item->product_id,
                     'quantity' => $item->quantity,
-                    'unit_price' => $item->product->price,
+                    'unit_price' => $item->product->selling_price,
                 ]);
             }
 

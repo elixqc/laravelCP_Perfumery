@@ -5,7 +5,7 @@
 @section('content')
 
 {{-- ── HERO ── --}}
-<section class="pp-hero pp-hero--home">
+<section class="pp-hero pp-hero--home" style="background-image: url('{{ asset('images/home-hero.png') }}');">
     <div class="pp-hero-rule">
         <span></span>
         <em>Est. Since Always</em>

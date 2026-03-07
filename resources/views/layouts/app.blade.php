@@ -30,7 +30,7 @@
             </nav>
 
             <a href="{{ url('/') }}" class="logo">
-                <span class="logo-name">{{ config('app.name', 'Prestige Perfumery') }}</span>
+                <span class="logo-name">PRESTIGE PERFUMERY</span>
                 <span class="logo-tag">Maison de Parfum</span>
             </a>
 
@@ -44,7 +44,15 @@
                         <a href="{{ route('register') }}" class="nav-link">Register</a>
                     @endif
                 @else
-                    <span class="user-name">{{ Auth::user()->name }}</span>
+                    <a href="{{ route('user.account') }}" class="nav-link nav-account"
+                    style="display:inline-flex; align-items:center; gap:0.5rem;">
+                        @if(Auth::user()->profile_picture)
+                            <img src="{{ asset('storage/' . Auth::user()->profile_picture) }}"
+                                alt="Profile"
+                                style="width:26px; height:26px; border-radius:50%; object-fit:cover; flex-shrink:0; border:1.5px solid var(--stone, #C8BEB2);">
+                        @endif
+                        <span>My Account</span>
+                    </a>
                     <span class="nav-divider"></span>
                     <a href="{{ route('logout') }}"
                        onclick="event.preventDefault(); document.getElementById('logout-form').submit();"

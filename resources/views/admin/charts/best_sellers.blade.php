@@ -1,18 +1,19 @@
+
 @extends('layouts.admin')
 
 @section('content')
-    <div class="px-8 py-6">
-        <div class="text-center mb-12">
-            <h1 class="text-4xl font-serif font-bold text-gold-400 mb-4 tracking-wider">Top Selling Perfumes</h1>
-            <p class="text-gold-300 text-lg font-light tracking-widest uppercase">Sales Report</p>
+<div class="pa-page">
+    <div class="pa-page-header">
+        <div>
+            <span class="pa-page-eyebrow">Reports</span>
+            <h1 class="pa-page-title">Top Selling Perfumes</h1>
         </div>
-
-        <div class="bg-black/40 backdrop-blur-sm border border-gold-400/20 rounded-lg shadow-2xl p-6">
+    </div>
+    <div class="pa-section">
+        <div class="pa-card pa-card--chart">
             @php
-                // Debug: Check if chart has data
                 $chartLabels = $chart->labels ?? [];
             @endphp
-
             @if(empty($chartLabels))
                 <div class="text-center py-12 text-gold-300">
                     <p class="text-lg">No sales data available yet.</p>
@@ -25,6 +26,7 @@
             @endif
         </div>
     </div>
+</div>
 @endsection
 
 @section('scripts')

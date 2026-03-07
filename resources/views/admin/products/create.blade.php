@@ -1,90 +1,316 @@
 @extends('layouts.admin')
 
+@section('title', 'Add New Product — Prestige Admin')
+
 @section('content')
 <div class="pa-page">
 
-    {{-- PAGE HEADER --}}
+    {{-- ── Page Header ── --}}
     <div class="pa-page-header">
         <div>
             <span class="pa-page-eyebrow">Inventory</span>
             <h1 class="pa-page-title">Add New Product</h1>
         </div>
+        <a href="{{ route('admin.products.index') }}" class="pa-table-link"
+           style="font-size:0.85rem; letter-spacing:0.05em; text-transform:none;">
+            ← Back to Products
+        </a>
     </div>
 
-    {{-- FORM --}}
-    <div class="pa-section">
+    {{-- ── Centered Form Container ── --}}
+    <div style="max-width:700px; margin:0 auto; width:100%;">
+        <form method="POST" action="{{ route('admin.products.store') }}" enctype="multipart/form-data">
+            @csrf
 
-    <form method="POST" action="{{ route('admin.products.store') }}" enctype="multipart/form-data">
-        @csrf
-        <div class="mb-4">
-            <label for="product_name" class="block text-sm font-medium">Product Name</label>
-            <input type="text" name="product_name" id="product_name" value="{{ old('product_name') }}" class="w-full border px-3 py-2" required>
-            @error('product_name')
-                <p class="text-red-500 text-sm">{{ $message }}</p>
-            @enderror
-        </div>
-        <div class="mb-4">
-            <label for="description" class="block text-sm font-medium">Description</label>
-            <textarea name="description" id="description" class="w-full border px-3 py-2">{{ old('description') }}</textarea>
-        </div>
-        <div class="mb-4">
-            <label for="price" class="block text-sm font-medium">Price</label>
-            <input type="number" step="0.01" name="price" id="price" value="{{ old('price') }}" class="w-full border px-3 py-2" required>
-            @error('price')
-                <p class="text-red-500 text-sm">{{ $message }}</p>
-            @enderror
-        </div>
-        <div class="mb-4">
-            <label for="stock_quantity" class="block text-sm font-medium">Stock Quantity</label>
-            <input type="number" name="stock_quantity" id="stock_quantity" value="{{ old('stock_quantity') }}" class="w-full border px-3 py-2" required>
-            @error('stock_quantity')
-                <p class="text-red-500 text-sm">{{ $message }}</p>
-            @enderror
-        </div>
-        <div class="mb-4">
-            <label for="category_id" class="block text-sm font-medium">Category</label>
-            <select name="category_id" id="category_id" class="w-full border px-3 py-2" required>
-                <option value="">Select Category</option>
-                @foreach($categories as $category)
-                    <option value="{{ $category->category_id }}" {{ old('category_id') == $category->category_id ? 'selected' : '' }}>{{ $category->category_name }}</option>
-                @endforeach
-            </select>
-            @error('category_id')
-                <p class="text-red-500 text-sm">{{ $message }}</p>
-            @enderror
-        </div>
-        <div class="mb-4">
-            <label for="supplier_id" class="block text-sm font-medium">Supplier</label>
-            <select name="supplier_id" id="supplier_id" class="w-full border px-3 py-2" required>
-                <option value="">Select Supplier</option>
-                @foreach($suppliers as $supplier)
-                    <option value="{{ $supplier->supplier_id }}" {{ old('supplier_id') == $supplier->supplier_id ? 'selected' : '' }}>{{ $supplier->supplier_name }}</option>
-                @endforeach
-            </select>
-            @error('supplier_id')
-                <p class="text-red-500 text-sm">{{ $message }}</p>
-            @enderror
-        </div>
-        <div class="mb-4">
-            <label for="variant" class="block text-sm font-medium">Variant</label>
-            <input type="text" name="variant" id="variant" value="{{ old('variant') }}" class="w-full border px-3 py-2">
-        </div>
-        <div class="mb-4">
-            <label for="image" class="block text-sm font-medium">Product Image</label>
-            <input type="file" name="image" id="image" class="w-full border px-3 py-2" accept="image/*">
-            @error('image')
-                <p class="text-red-500 text-sm">{{ $message }}</p>
-            @enderror
-        </div>
-        <div class="mb-4">
-            <label class="inline-flex items-center">
-                <input type="checkbox" name="is_active" value="1" {{ old('is_active') ? 'checked' : '' }} class="mr-2">
-                Active
-            </label>
-        </div>
-        <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Create Product</button>
-    </form>
+            {{-- ── Section: Product Information ── --}}
+            <div style="margin-bottom:2rem;">
+                <p style="font-size:0.7rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--gold); font-family:'Jost',sans-serif; font-weight:400; padding-bottom:0.6rem; border-bottom:1px solid var(--cream); margin-bottom:1.5rem;">
+                    Product Information
+                </p>
+                <div style="background:#FDFBF8; border:1px solid #D6D0C8; padding:2rem; display:flex; flex-direction:column; gap:1.5rem;">
 
-    <a href="{{ route('admin.products.index') }}" class="text-blue-500 mt-4 inline-block">Back to Products</a>
+                    {{-- Product Name --}}
+                    <div style="display:flex; flex-direction:column; gap:0.5rem;">
+                        <label for="product_name" style="font-size:0.8rem; font-weight:500; color:#2C2825; font-family:'Jost',sans-serif;">
+                            Product Name <span style="color:#C97A7A;">*</span>
+                        </label>
+                        <input type="text" name="product_name" id="product_name"
+                               value="{{ old('product_name') }}"
+                               required placeholder="e.g. Oud Royale Intense"
+                               style="background:#fff; border:1.5px solid {{ $errors->has('product_name') ? '#C97A7A' : '#B0A898' }}; color:#1A1714; font-family:'Jost',sans-serif; font-weight:400; font-size:0.95rem; padding:0.75rem 1rem; outline:none; width:100%; transition:border-color 0.2s; border-radius:2px;"
+                               onfocus="this.style.borderColor='#B5975A'"
+                               onblur="this.style.borderColor='{{ $errors->has('product_name') ? '#C97A7A' : '#B0A898' }}'">
+                        @error('product_name')
+                            <span style="font-size:0.78rem; color:#8B3A3A; font-family:'Jost',sans-serif;">{{ $message }}</span>
+                        @enderror
+                    </div>
+
+                    {{-- Description --}}
+                    <div style="display:flex; flex-direction:column; gap:0.5rem;">
+                        <label for="description" style="font-size:0.8rem; font-weight:500; color:#2C2825; font-family:'Jost',sans-serif;">
+                            Description
+                        </label>
+                        <textarea name="description" id="description" rows="4"
+                                  placeholder="Describe the fragrance notes, mood, occasion…"
+                                  style="background:#fff; border:1.5px solid #B0A898; color:#1A1714; font-family:'Jost',sans-serif; font-weight:400; font-size:0.95rem; padding:0.75rem 1rem; outline:none; width:100%; resize:vertical; min-height:110px; transition:border-color 0.2s; border-radius:2px;"
+                                  onfocus="this.style.borderColor='#B5975A'"
+                                  onblur="this.style.borderColor='#B0A898'">{{ old('description') }}</textarea>
+                    </div>
+
+                    {{-- Variant --}}
+                    <div style="display:flex; flex-direction:column; gap:0.5rem;">
+                        <label for="variant" style="font-size:0.8rem; font-weight:500; color:#2C2825; font-family:'Jost',sans-serif;">
+                            Variant
+                        </label>
+                        <input type="text" name="variant" id="variant"
+                               value="{{ old('variant') }}" placeholder="e.g. 50ml, 100ml, EDP"
+                               style="background:#fff; border:1.5px solid #B0A898; color:#1A1714; font-family:'Jost',sans-serif; font-weight:400; font-size:0.95rem; padding:0.75rem 1rem; outline:none; width:100%; transition:border-color 0.2s; border-radius:2px;"
+                               onfocus="this.style.borderColor='#B5975A'"
+                               onblur="this.style.borderColor='#B0A898'">
+                    </div>
+
+                </div>
+            </div>
+
+            {{-- ── Section: Pricing & Inventory ── --}}
+            <div style="margin-bottom:2rem;">
+                <p style="font-size:0.7rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--gold); font-family:'Jost',sans-serif; font-weight:400; padding-bottom:0.6rem; border-bottom:1px solid var(--cream); margin-bottom:1.5rem;">
+                    Pricing & Inventory
+                </p>
+                <div style="background:#FDFBF8; border:1px solid #D6D0C8; padding:2rem; display:flex; flex-direction:column; gap:1.5rem;">
+
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem;">
+
+                        {{-- Initial Price --}}
+                        <div style="display:flex; flex-direction:column; gap:0.5rem;">
+                            <label for="initial_price" style="font-size:0.8rem; font-weight:500; color:#2C2825; font-family:'Jost',sans-serif;">
+                                Cost Price
+                            </label>
+                            <div style="position:relative;">
+                                <span style="position:absolute; left:0.85rem; top:50%; transform:translateY(-50%); font-size:0.9rem; color:#8C8078; pointer-events:none;">$</span>
+                                <input type="number" step="0.01" min="0" name="initial_price" id="initial_price"
+                                       value="{{ old('initial_price') }}" placeholder="0.00"
+                                       style="background:#fff; border:1.5px solid {{ $errors->has('initial_price') ? '#C97A7A' : '#B0A898' }}; color:#1A1714; font-family:'Jost',sans-serif; font-weight:400; font-size:0.95rem; padding:0.75rem 1rem 0.75rem 2rem; outline:none; width:100%; transition:border-color 0.2s; border-radius:2px;"
+                                       onfocus="this.style.borderColor='#B5975A'"
+                                       onblur="this.style.borderColor='{{ $errors->has('initial_price') ? '#C97A7A' : '#B0A898' }}'">
+                            </div>
+                            @error('initial_price')
+                                <span style="font-size:0.78rem; color:#8B3A3A; font-family:'Jost',sans-serif;">{{ $message }}</span>
+                            @enderror
+                        </div>
+
+                        {{-- Selling Price --}}
+                        <div style="display:flex; flex-direction:column; gap:0.5rem;">
+                            <label for="selling_price" style="font-size:0.8rem; font-weight:500; color:#2C2825; font-family:'Jost',sans-serif;">
+                                Selling Price
+                            </label>
+                            <div style="position:relative;">
+                                <span style="position:absolute; left:0.85rem; top:50%; transform:translateY(-50%); font-size:0.9rem; color:#8C8078; pointer-events:none;">$</span>
+                                <input type="number" step="0.01" min="0" name="selling_price" id="selling_price"
+                                       value="{{ old('selling_price') }}" placeholder="0.00"
+                                       style="background:#fff; border:1.5px solid {{ $errors->has('selling_price') ? '#C97A7A' : '#B0A898' }}; color:#1A1714; font-family:'Jost',sans-serif; font-weight:400; font-size:0.95rem; padding:0.75rem 1rem 0.75rem 2rem; outline:none; width:100%; transition:border-color 0.2s; border-radius:2px;"
+                                       onfocus="this.style.borderColor='#B5975A'"
+                                       onblur="this.style.borderColor='{{ $errors->has('selling_price') ? '#C97A7A' : '#B0A898' }}'">
+                            </div>
+                            @error('selling_price')
+                                <span style="font-size:0.78rem; color:#8B3A3A; font-family:'Jost',sans-serif;">{{ $message }}</span>
+                            @enderror
+                        </div>
+
+                    </div>
+
+                    {{-- Stock Quantity --}}
+                    <div style="display:flex; flex-direction:column; gap:0.5rem;">
+                        <label for="stock_quantity" style="font-size:0.8rem; font-weight:500; color:#2C2825; font-family:'Jost',sans-serif;">
+                            Stock Quantity <span style="color:#C97A7A;">*</span>
+                        </label>
+                        <input type="number" min="0" name="stock_quantity" id="stock_quantity"
+                               value="{{ old('stock_quantity') }}" required placeholder="0"
+                               style="background:#fff; border:1.5px solid {{ $errors->has('stock_quantity') ? '#C97A7A' : '#B0A898' }}; color:#1A1714; font-family:'Jost',sans-serif; font-weight:400; font-size:0.95rem; padding:0.75rem 1rem; outline:none; max-width:180px; transition:border-color 0.2s; border-radius:2px;"
+                               onfocus="this.style.borderColor='#B5975A'"
+                               onblur="this.style.borderColor='{{ $errors->has('stock_quantity') ? '#C97A7A' : '#B0A898' }}'">
+                        @error('stock_quantity')
+                            <span style="font-size:0.78rem; color:#8B3A3A; font-family:'Jost',sans-serif;">{{ $message }}</span>
+                        @enderror
+                    </div>
+
+                </div>
+            </div>
+
+            {{-- ── Section: Classification ── --}}
+            <div style="margin-bottom:2rem;">
+                <p style="font-size:0.7rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--gold); font-family:'Jost',sans-serif; font-weight:400; padding-bottom:0.6rem; border-bottom:1px solid var(--cream); margin-bottom:1.5rem;">
+                    Classification
+                </p>
+                <div style="background:#FDFBF8; border:1px solid #D6D0C8; padding:2rem; display:grid; grid-template-columns:1fr 1fr; gap:1.5rem;">
+
+                    {{-- Category --}}
+                    <div style="display:flex; flex-direction:column; gap:0.5rem;">
+                        <label for="category_id" style="font-size:0.8rem; font-weight:500; color:#2C2825; font-family:'Jost',sans-serif;">
+                            Category <span style="color:#C97A7A;">*</span>
+                        </label>
+                        <div style="position:relative;">
+                            <select name="category_id" id="category_id" required
+                                    style="background:#fff; border:1.5px solid {{ $errors->has('category_id') ? '#C97A7A' : '#B0A898' }}; color:#1A1714; font-family:'Jost',sans-serif; font-weight:400; font-size:0.95rem; padding:0.75rem 2.5rem 0.75rem 1rem; outline:none; width:100%; appearance:none; -webkit-appearance:none; cursor:pointer; transition:border-color 0.2s; border-radius:2px;"
+                                    onfocus="this.style.borderColor='#B5975A'"
+                                    onblur="this.style.borderColor='{{ $errors->has('category_id') ? '#C97A7A' : '#B0A898' }}'">
+                                <option value="">Select Category</option>
+                                @foreach($categories as $category)
+                                    <option value="{{ $category->category_id }}" {{ old('category_id') == $category->category_id ? 'selected' : '' }}>
+                                        {{ $category->category_name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            <span style="position:absolute; right:1rem; top:50%; transform:translateY(-50%); color:#8C8078; font-size:0.8rem; pointer-events:none;">▾</span>
+                        </div>
+                        @error('category_id')
+                            <span style="font-size:0.78rem; color:#8B3A3A; font-family:'Jost',sans-serif;">{{ $message }}</span>
+                        @enderror
+                    </div>
+
+                    {{-- Supplier --}}
+                    <div style="display:flex; flex-direction:column; gap:0.5rem;">
+                        <label for="supplier_id" style="font-size:0.8rem; font-weight:500; color:#2C2825; font-family:'Jost',sans-serif;">
+                            Supplier <span style="color:#C97A7A;">*</span>
+                        </label>
+                        <div style="position:relative;">
+                            <select name="supplier_id" id="supplier_id" required
+                                    style="background:#fff; border:1.5px solid {{ $errors->has('supplier_id') ? '#C97A7A' : '#B0A898' }}; color:#1A1714; font-family:'Jost',sans-serif; font-weight:400; font-size:0.95rem; padding:0.75rem 2.5rem 0.75rem 1rem; outline:none; width:100%; appearance:none; -webkit-appearance:none; cursor:pointer; transition:border-color 0.2s; border-radius:2px;"
+                                    onfocus="this.style.borderColor='#B5975A'"
+                                    onblur="this.style.borderColor='{{ $errors->has('supplier_id') ? '#C97A7A' : '#B0A898' }}'">
+                                <option value="">Select Supplier</option>
+                                @foreach($suppliers as $supplier)
+                                    <option value="{{ $supplier->supplier_id }}" {{ old('supplier_id') == $supplier->supplier_id ? 'selected' : '' }}>
+                                        {{ $supplier->supplier_name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            <span style="position:absolute; right:1rem; top:50%; transform:translateY(-50%); color:#8C8078; font-size:0.8rem; pointer-events:none;">▾</span>
+                        </div>
+                        @error('supplier_id')
+                            <span style="font-size:0.78rem; color:#8B3A3A; font-family:'Jost',sans-serif;">{{ $message }}</span>
+                        @enderror
+                    </div>
+
+                </div>
+            </div>
+
+            {{-- ── Section: Images ── --}}
+            <div style="margin-bottom:2rem;">
+                <p style="font-size:0.7rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--gold); font-family:'Jost',sans-serif; font-weight:400; padding-bottom:0.6rem; border-bottom:1px solid var(--cream); margin-bottom:1.5rem;">
+                    Product Images
+                </p>
+                <div style="background:#FDFBF8; border:1px solid #D6D0C8; padding:2rem; display:flex; flex-direction:column; gap:1rem;">
+
+                    <label for="images" id="dropzone"
+                           style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:0.6rem; padding:2rem 1.5rem; border:2px dashed #B0A898; background:#fff; cursor:pointer; transition:border-color 0.25s, background 0.25s; border-radius:2px;"
+                           onmouseover="this.style.borderColor='#B5975A'; this.style.background='#F5F0E8'"
+                           onmouseout="this.style.borderColor='#B0A898'; this.style.background='#fff'">
+                        <span style="font-size:2rem; line-height:1; color:#B0A898;">↑</span>
+                        <span id="dropzone-label" style="font-size:0.88rem; font-weight:500; color:#5A524A; font-family:'Jost',sans-serif; text-align:center;">
+                            Click to choose images
+                        </span>
+                        <span style="font-size:0.78rem; color:#8C8078; font-family:'Jost',sans-serif;">
+                            JPG, PNG, WEBP — multiple files supported
+                        </span>
+                    </label>
+
+                    <input type="file" name="images[]" id="images" accept="image/*" multiple style="display:none;" onchange="previewImages(this)">
+                    <div id="image-preview" style="display:none; grid-template-columns:repeat(5,1fr); gap:6px;"></div>
+
+                    @error('images')
+                        <span style="font-size:0.78rem; color:#8B3A3A; font-family:'Jost',sans-serif;">{{ $message }}</span>
+                    @enderror
+                    @error('images.*')
+                        <span style="font-size:0.78rem; color:#8B3A3A; font-family:'Jost',sans-serif;">{{ $message }}</span>
+                    @enderror
+
+                </div>
+            </div>
+
+            {{-- ── Section: Visibility ── --}}
+            <div style="margin-bottom:2rem;">
+                <p style="font-size:0.7rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--gold); font-family:'Jost',sans-serif; font-weight:400; padding-bottom:0.6rem; border-bottom:1px solid var(--cream); margin-bottom:1.5rem;">
+                    Visibility
+                </p>
+                <div style="background:#FDFBF8; border:1px solid #D6D0C8; padding:1.5rem 2rem; display:flex; align-items:center; justify-content:space-between; gap:2rem;">
+                    <div>
+                        <span style="font-size:0.88rem; font-weight:500; color:#2C2825; font-family:'Jost',sans-serif; display:block; margin-bottom:0.3rem;">
+                            Active Listing
+                        </span>
+                        <span style="font-size:0.82rem; color:#8C8078; font-family:'Jost',sans-serif;">
+                            Show this product to customers on the storefront
+                        </span>
+                    </div>
+                    <label style="display:flex; align-items:center; gap:0.6rem; cursor:pointer; flex-shrink:0;">
+                        <input type="checkbox" name="is_active" id="is_active" value="1"
+                               {{ old('is_active', true) ? 'checked' : '' }}
+                               style="appearance:none; -webkit-appearance:none; width:20px; height:20px; border:2px solid #B0A898; background:#fff; cursor:pointer; transition:border-color 0.2s, background 0.2s; flex-shrink:0; border-radius:2px;"
+                               onchange="this.style.background=this.checked?'#2C2825':'#fff'; this.style.borderColor=this.checked?'#2C2825':'#B0A898'">
+                        <span style="font-size:0.88rem; color:#5A524A; font-family:'Jost',sans-serif; font-weight:400;">Active</span>
+                    </label>
+                </div>
+            </div>
+
+            {{-- ── Actions ── --}}
+            <div style="display:flex; align-items:center; gap:1rem; padding-top:1.5rem; border-top:1px solid #E8E2D9;">
+                <button type="submit"
+                        style="background:#2C2825; color:#F8F5F0; border:none; font-family:'Jost',sans-serif; font-size:0.88rem; font-weight:500; letter-spacing:0.08em; text-transform:uppercase; padding:0.85rem 2.5rem; cursor:pointer; transition:background 0.25s, color 0.25s; border-radius:2px;"
+                        onmouseover="this.style.background='#B5975A'; this.style.color='#1A1714'"
+                        onmouseout="this.style.background='#2C2825'; this.style.color='#F8F5F0'">
+                    Create Product
+                </button>
+                <a href="{{ route('admin.products.index') }}"
+                   style="background:transparent; color:#5A524A; border:1.5px solid #B0A898; font-family:'Jost',sans-serif; font-size:0.88rem; font-weight:400; letter-spacing:0.05em; text-transform:uppercase; padding:0.82rem 2rem; text-decoration:none; transition:border-color 0.25s, color 0.25s; display:inline-block; border-radius:2px;"
+                   onmouseover="this.style.borderColor='#B5975A'; this.style.color='#B5975A'"
+                   onmouseout="this.style.borderColor='#B0A898'; this.style.color='#5A524A'">
+                    Cancel
+                </a>
+            </div>
+
+        </form>
+    </div>
+
 </div>
+
+<script>
+    function previewImages(input) {
+        const preview = document.getElementById('image-preview');
+        preview.innerHTML = '';
+        if (input.files && input.files.length > 0) {
+            preview.style.display = 'grid';
+            Array.from(input.files).forEach((file, i) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const wrap = document.createElement('div');
+                    wrap.style.cssText = 'aspect-ratio:1/1; overflow:hidden; background:#EDE8DF; border:1.5px solid #B5975A; position:relative; border-radius:2px;';
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.style.cssText = 'width:100%; height:100%; object-fit:cover; display:block;';
+                    const badge = document.createElement('span');
+                    badge.textContent = i + 1;
+                    badge.style.cssText = 'position:absolute; top:4px; left:4px; background:rgba(26,23,20,0.7); color:#fff; font-family:Jost,sans-serif; font-size:0.65rem; font-weight:500; padding:2px 7px;';
+                    wrap.appendChild(img);
+                    wrap.appendChild(badge);
+                    preview.appendChild(wrap);
+                };
+                reader.readAsDataURL(file);
+            });
+            document.getElementById('dropzone-label').textContent =
+                input.files.length + ' image' + (input.files.length > 1 ? 's' : '') + ' selected';
+        } else {
+            preview.style.display = 'none';
+            document.getElementById('dropzone-label').textContent = 'Click to choose images';
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const cb = document.getElementById('is_active');
+        if (cb) {
+            cb.style.background  = cb.checked ? '#2C2825' : '#fff';
+            cb.style.borderColor = cb.checked ? '#2C2825' : '#B0A898';
+        }
+    });
+</script>
+
 @endsection

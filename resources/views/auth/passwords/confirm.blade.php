@@ -1,49 +1,60 @@
 @extends('layouts.app')
 
+@section('title', 'Confirm Password — Prestige Perfumery')
+
 @section('content')
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header">{{ __('Confirm Password') }}</div>
 
-                <div class="card-body">
-                    {{ __('Please confirm your password before continuing.') }}
+<div class="pp-auth-wrap">
+    <div class="pp-auth-card">
 
-                    <form method="POST" action="{{ route('password.confirm') }}">
-                        @csrf
-
-                        <div class="row mb-3">
-                            <label for="password" class="col-md-4 col-form-label text-md-end">{{ __('Password') }}</label>
-
-                            <div class="col-md-6">
-                                <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" required autocomplete="current-password">
-
-                                @error('password')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="row mb-0">
-                            <div class="col-md-8 offset-md-4">
-                                <button type="submit" class="btn btn-primary">
-                                    {{ __('Confirm Password') }}
-                                </button>
-
-                                @if (Route::has('password.request'))
-                                    <a class="btn btn-link" href="{{ route('password.request') }}">
-                                        {{ __('Forgot Your Password?') }}
-                                    </a>
-                                @endif
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
+        <div class="pp-auth-header">
+            <span class="pp-auth-header-eyebrow">Security Check</span>
+            <h1>Confirm Password</h1>
         </div>
+
+        <div class="pp-auth-body">
+            <p style="margin-bottom: 1.5rem; font-size: 0.88rem; line-height: 1.6; color: var(--stone);">
+                {{ __('Please confirm your password before continuing.') }}
+            </p>
+
+            <form method="POST" action="{{ route('password.confirm') }}">
+                @csrf
+
+                {{-- Password --}}
+                <div class="pp-auth-field">
+                    <label for="password" class="pp-auth-label">{{ __('Password') }}</label>
+                    <input
+                        id="password"
+                        type="password"
+                        name="password"
+                        placeholder="••••••••"
+                        class="pp-auth-input @error('password') is-invalid @enderror"
+                        required
+                        autocomplete="current-password"
+                    >
+                    @error('password')
+                        <span class="pp-auth-error" role="alert">{{ $message }}</span>
+                    @enderror
+                </div>
+
+                <div class="pp-auth-divider"></div>
+
+                <button type="submit" class="pp-auth-submit">
+                    {{ __('Confirm Password') }}
+                </button>
+
+            </form>
+
+            @if (Route::has('password.request'))
+                <p class="pp-auth-footer">
+                    <a href="{{ route('password.request') }}">
+                        {{ __('Forgot your password?') }}
+                    </a>
+                </p>
+            @endif
+        </div>
+
     </div>
 </div>
+
 @endsection

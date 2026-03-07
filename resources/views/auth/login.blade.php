@@ -18,7 +18,7 @@
 
                 {{-- Email --}}
                 <div class="pp-auth-field">
-                    <label for="email" class="pp-auth-label">Email Address</label>
+                    <label for="email" class="pp-auth-label">{{ __('Email Address') }}</label>
                     <input
                         id="email"
                         type="email"
@@ -37,7 +37,7 @@
 
                 {{-- Password --}}
                 <div class="pp-auth-field">
-                    <label for="password" class="pp-auth-label">Password</label>
+                    <label for="password" class="pp-auth-label">{{ __('Password') }}</label>
                     <input
                         id="password"
                         type="password"
@@ -62,12 +62,12 @@
                             class="pp-auth-checkbox"
                             {{ old('remember') ? 'checked' : '' }}
                         >
-                        <span>Remember me</span>
+                        <span>{{ __('Remember me') }}</span>
                     </label>
 
                     @if(Route::has('password.request'))
                         <a href="{{ route('password.request') }}" class="pp-auth-forgot">
-                            Forgot password?
+                            {{ __('Forgot password?') }}
                         </a>
                     @endif
                 </div>
@@ -75,14 +75,14 @@
                 <div class="pp-auth-divider"></div>
 
                 <button type="submit" class="pp-auth-submit">
-                    Sign In
+                    {{ __('Sign In') }}
                 </button>
 
             </form>
 
             <p class="pp-auth-footer">
-                Don't have an account?
-                <a href="{{ route('register') }}">Create one</a>
+                {{ __('Don\'t have an account?') }}
+                <a href="{{ route('register') }}">{{ __('Create one') }}</a>
             </p>
         </div>
 
