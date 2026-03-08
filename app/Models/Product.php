@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Laravel\Scout\Searchable;
 
 class Product extends Model
 {
-    use HasFactory, \Illuminate\Database\Eloquent\SoftDeletes;
+    use HasFactory, \Illuminate\Database\Eloquent\SoftDeletes, Searchable;
 
     public $timestamps = false;
 
@@ -78,8 +79,80 @@ class Product extends Model
         return $this->product_name;
     }
 
+    // Query Scopes for Search (10pts - Model Search Method)
+    public function scopeActive($query)
+    {
+        return $query->where('is_active', 1);
+    }
+
+    public function scopeSearch($query, $search = null)
+    {
+        if (!$search) {
+            return $query;
+        }
+
+        return $query->where(function ($q) use ($search) {
+            $q->where('product_name', 'LIKE', '%' . $search . '%')
+              ->orWhere('description', 'LIKE', '%' . $search . '%');
+        });
+    }
+
+    public function scopeByCategory($query, $categoryId = null)
+    {
+        if (!$categoryId) {
+            return $query;
+        }
+
+        return $query->where('category_id', $categoryId);
+    }
+
+    public function scopeBySupplier($query, $supplierId = null)
+    {
+        if (!$supplierId) {
+            return $query;
+        }
+
+        return $query->where('supplier_id', $supplierId);
+    }
+
+    public function scopeSortByPrice($query, $direction = null)
+    {
+        return match ($direction) {
+            'asc'  => $query->orderBy('selling_price', 'asc'),
+            'desc' => $query->orderBy('selling_price', 'desc'),
+            default => $query->orderBy('product_id', 'desc'),
+        };
+    }
+
     public function getTotalStockAttribute()
     {
         return $this->supplyLogs()->sum('quantity_added') - $this->orderDetails()->sum('quantity');
+    }
+
+    // Laravel Scout Searchable Methods (15pts - Laravel Scout Integration)
+    public function toSearchableArray()
+    {
+        return [
+            'product_id' => $this->product_id,
+            'product_name' => $this->product_name,
+            'description' => $this->description,
+            'selling_price' => $this->selling_price,
+            'is_active' => $this->is_active,
+        ];
+    }
+    // Laravel Scout Key Methods (required when primary key is not 'id')
+public function getScoutKey()
+{
+    return $this->product_id;
+}
+
+public function getScoutKeyName()
+{
+    return 'product_id';
+}
+    public function shouldBeSearchable()
+    {
+        // Only index active products
+        return $this->is_active;
     }
 }

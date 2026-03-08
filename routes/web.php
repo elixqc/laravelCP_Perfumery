@@ -11,10 +11,7 @@ use Illuminate\Support\Facades\Route;
 
 // ── Home ────────────────────────────────────────────────────────────────────
 
-Route::get('/', function () {
-    $featuredProducts = \App\Models\Product::with(['productImages', 'category', 'supplier'])->take(6)->get();
-    return view('welcome', compact('featuredProducts'));
-})->name('home');
+Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 // ── Auth ─────────────────────────────────────────────────────────────────────
 
