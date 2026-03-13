@@ -36,7 +36,8 @@ class Product extends Model
 
     protected $dates = ['deleted_at'];
 
-    // Relationships
+    // ── Relationships ────────────────────────────────────────────
+
     public function category()
     {
         return $this->belongsTo(Category::class, 'category_id');
@@ -69,17 +70,19 @@ class Product extends Model
 
     public function cartUsers()
     {
-        return $this->belongsToMany(User::class, 'cart', 'product_id', 'user_id')->withPivot('quantity', 'date_added');
+        return $this->belongsToMany(User::class, 'cart', 'product_id', 'user_id')
+                    ->withPivot('quantity', 'date_added');
     }
 
-    // Accessors
+    // ── Accessors ────────────────────────────────────────────────
+
     public function getNameAttribute()
     {
-        // allow convenience $product->name in templates
         return $this->product_name;
     }
 
-    // Query Scopes for Search (10pts - Model Search Method)
+    // ── Query Scopes ─────────────────────────────────────────────
+
     public function scopeActive($query)
     {
         return $query->where('is_active', 1);
@@ -87,9 +90,7 @@ class Product extends Model
 
     public function scopeSearch($query, $search = null)
     {
-        if (!$search) {
-            return $query;
-        }
+        if (!$search) return $query;
 
         return $query->where(function ($q) use ($search) {
             $q->where('product_name', 'LIKE', '%' . $search . '%')
@@ -99,19 +100,13 @@ class Product extends Model
 
     public function scopeByCategory($query, $categoryId = null)
     {
-        if (!$categoryId) {
-            return $query;
-        }
-
+        if (!$categoryId) return $query;
         return $query->where('category_id', $categoryId);
     }
 
     public function scopeBySupplier($query, $supplierId = null)
     {
-        if (!$supplierId) {
-            return $query;
-        }
-
+        if (!$supplierId) return $query;
         return $query->where('supplier_id', $supplierId);
     }
 
@@ -126,33 +121,36 @@ class Product extends Model
 
     public function getTotalStockAttribute()
     {
-        return $this->supplyLogs()->sum('quantity_added') - $this->orderDetails()->sum('quantity');
+        return $this->supplyLogs()->sum('quantity_added')
+             - $this->orderDetails()->sum('quantity');
     }
 
-    // Laravel Scout Searchable Methods (15pts - Laravel Scout Integration)
+    // ── Laravel Scout ────────────────────────────────────────────
+
     public function toSearchableArray()
     {
         return [
-            'product_id' => $this->product_id,
+            'product_id'   => $this->product_id,
             'product_name' => $this->product_name,
-            'description' => $this->description,
-            'selling_price' => $this->selling_price,
-            'is_active' => $this->is_active,
+            'description'  => $this->description,
+            'selling_price'=> $this->selling_price,
+            'category_id'  => $this->category_id,   // needed for category filter
+            'is_active'    => $this->is_active,
         ];
     }
-    // Laravel Scout Key Methods (required when primary key is not 'id')
-public function getScoutKey()
-{
-    return $this->product_id;
-}
 
-public function getScoutKeyName()
-{
-    return 'product_id';
-}
+    public function getScoutKey()
+    {
+        return $this->product_id;
+    }
+
+    public function getScoutKeyName()
+    {
+        return 'product_id';
+    }
+
     public function shouldBeSearchable()
     {
-        // Only index active products
         return $this->is_active;
     }
 }

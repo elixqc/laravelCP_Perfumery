@@ -4,44 +4,6 @@
 
 @section('content')
 
-{{-- ── SEARCH ── }}--}}
-<section class="pp-section pp-section--ivory">
-    <div class="pp-section-inner">
-        <div class="pp-section-header pp-section-header--centered">
-            <span class="pp-section-title">Search Fragrances</span>
-        </div>
-        
-        <form method="GET" action="{{ route('home') }}" class="pp-search-form">
-            <div class="pp-search-grid">
-                <input 
-                    type="text" 
-                    name="search" 
-                    placeholder="Search for fragrances..." 
-                    value="{{ request('search') }}"
-                    class="pp-search-input"
-                >
-                <select name="category" class="pp-search-select">
-                    <option value="">All Categories</option>
-                    @foreach(App\Models\Category::all() as $category)
-                        <option value="{{ $category->category_id }}" {{ request('category') == $category->category_id ? 'selected' : '' }}>
-                            {{ $category->category_name }}
-                        </option>
-                    @endforeach
-                </select>
-                <button type="submit" class="pp-btn-ghost">Search</button>
-            </div>
-        </form>
-        
-        @if(request('search'))
-            <div class="pp-search-results">
-                <p class="pp-search-count">
-                    Found {{ isset($searchProducts) ? $searchProducts->total() : 0 }} results
-                </p>
-            </div>
-        @endif
-    </div>
-</section>
-
 {{-- ── HERO ── --}}
 <section class="pp-hero pp-hero--home" style="background-image: url('{{ asset('images/home-hero.png') }}');">
     <div class="pp-hero-rule">
@@ -54,63 +16,30 @@
     <a href="{{ route('products.index') }}" class="pp-btn-ghost pp-btn-ghost--light">Explore Collection</a>
 </section>
 
-{{-- ── FEATURED PRODUCTS ── --}}
+{{-- ── SEARCH RESULTS ── --}}
+@if(request('search') || request('category'))
 <section class="pp-section pp-section--ivory">
     <div class="pp-section-inner">
 
         <div class="pp-section-header pp-section-header--centered">
-            <span class="pp-section-title">Featured Fragrances</span>
+            <div>
+                @if(request('search'))
+                    <span class="pp-section-title">Results for &ldquo;{{ request('search') }}&rdquo;</span>
+                @else
+                    <span class="pp-section-title">Browsing Category</span>
+                @endif
+                <p class="pp-search-meta">
+                    {{ $searchProducts?->total() ?? 0 }} {{ Str::plural('fragrance', $searchProducts?->total() ?? 0) }} found
+                    &ensp;·&ensp;
+                    <a href="{{ route('home') }}" class="pp-search-clear">Clear ✕</a>
+                </p>
+            </div>
         </div>
 
-        <div class="pp-featured-grid">
-            @if(request('search'))
-                {{-- Search Results --}}
-                @if(isset($searchProducts) && $searchProducts && $searchProducts->count() > 0)
-                    @foreach($searchProducts as $product)
-                        @php
-                            $firstImage = $product->productImages->first();
-                            $imageUrl   = $firstImage
-                                ? asset('storage/' . $firstImage->image_path)
-                                : ($product->image_path ? asset('storage/' . $product->image_path) : null);
-                            [$priceWhole, $priceDec] = explode('.', number_format($product->selling_price, 2));
-                        @endphp
+        @if($searchProducts && $searchProducts->count() > 0)
 
-                        <article class="pp-card">
-                            @if($imageUrl)
-                                <div class="pp-card-img-wrap">
-                                    <img src="{{ $imageUrl }}" alt="{{ $product->product_name }}" loading="lazy">
-                                    <div class="pp-card-overlay"></div>
-                                </div>
-                            @else
-                                <div class="pp-card-no-img"><span>No image</span></div>
-                            @endif
-
-                            <div class="pp-card-body">
-                                <span class="pp-card-supplier">{{ $product->supplier->supplier_name ?? 'Prestige' }}</span>
-                                <a href="{{ route('products.show', $product) }}" class="pp-card-name">{{ $product->product_name }}</a>
-                                <p class="pp-card-desc">{{ Str::limit($product->description, 100) }}</p>
-                                <div class="pp-card-footer">
-                                    <span class="pp-card-price"><sup>₱</sup>{{ $priceWhole }}<sup>.{{ $priceDec }}</sup></span>
-                                    <a href="{{ route('products.show', $product) }}" class="pp-btn-view">Discover →</a>
-                                </div>
-                            </div>
-                        </article>
-                    @endforeach
-                    
-                    @if($searchProducts->hasPages())
-                        <div class="pp-pagination">
-                            {{ $searchProducts->links() }}
-                        </div>
-                    @endif
-                @else
-                    <div class="pp-no-results">
-                        <p>No products found matching your search criteria.</p>
-                        <a href="{{ route('home') }}" class="pp-btn-ghost">Clear Search</a>
-                    </div>
-                @endif
-            @else
-                {{-- Featured Products --}}
-                @foreach($featuredProducts ?? [] as $product)
+            <div class="pp-featured-grid">
+                @foreach($searchProducts as $product)
                     @php
                         $firstImage = $product->productImages->first();
                         $imageUrl   = $firstImage
@@ -140,17 +69,81 @@
                         </div>
                     </article>
                 @endforeach
-            @endif
-        </div>
-
-        @if(!request('search'))
-            <div class="pp-section-cta">
-                <a href="{{ route('products.index') }}" class="pp-btn-ghost">View All Products</a>
             </div>
+
+            {{-- Pagination OUTSIDE the grid --}}
+            @if($searchProducts->hasPages())
+                <div class="pp-pagination">
+                    {{ $searchProducts->links() }}
+                </div>
+            @endif
+
+        @else
+
+            <div class="pp-empty">
+                <span class="pp-empty-icon">◈</span>
+                <h3>No fragrances found</h3>
+                <p>Try a different search term or browse our full collection.</p>
+                <div style="display:flex; gap:1rem; justify-content:center; flex-wrap:wrap;">
+                    <a href="{{ route('home') }}" class="pp-btn-ghost">Clear Search</a>
+                    <a href="{{ route('products.index') }}" class="pp-btn-ghost">View All</a>
+                </div>
+            </div>
+
         @endif
 
     </div>
 </section>
+
+{{-- ── FEATURED PRODUCTS (only shown when not searching) ── --}}
+@else
+<section class="pp-section pp-section--ivory">
+    <div class="pp-section-inner">
+
+        <div class="pp-section-header pp-section-header--centered">
+            <span class="pp-section-title">Featured Fragrances</span>
+        </div>
+
+        <div class="pp-featured-grid">
+            @foreach($featuredProducts ?? [] as $product)
+                @php
+                    $firstImage = $product->productImages->first();
+                    $imageUrl   = $firstImage
+                        ? asset('storage/' . $firstImage->image_path)
+                        : ($product->image_path ? asset('storage/' . $product->image_path) : null);
+                    [$priceWhole, $priceDec] = explode('.', number_format($product->selling_price, 2));
+                @endphp
+
+                <article class="pp-card">
+                    @if($imageUrl)
+                        <div class="pp-card-img-wrap">
+                            <img src="{{ $imageUrl }}" alt="{{ $product->product_name }}" loading="lazy">
+                            <div class="pp-card-overlay"></div>
+                        </div>
+                    @else
+                        <div class="pp-card-no-img"><span>No image</span></div>
+                    @endif
+
+                    <div class="pp-card-body">
+                        <span class="pp-card-supplier">{{ $product->supplier->supplier_name ?? 'Prestige' }}</span>
+                        <a href="{{ route('products.show', $product) }}" class="pp-card-name">{{ $product->product_name }}</a>
+                        <p class="pp-card-desc">{{ Str::limit($product->description, 100) }}</p>
+                        <div class="pp-card-footer">
+                            <span class="pp-card-price"><sup>₱</sup>{{ $priceWhole }}<sup>.{{ $priceDec }}</sup></span>
+                            <a href="{{ route('products.show', $product) }}" class="pp-btn-view">Discover →</a>
+                        </div>
+                    </div>
+                </article>
+            @endforeach
+        </div>
+
+        <div class="pp-section-cta">
+            <a href="{{ route('products.index') }}" class="pp-btn-ghost">View All Products</a>
+        </div>
+
+    </div>
+</section>
+@endif
 
 {{-- ── ABOUT ── --}}
 <section class="pp-section pp-section--cream">
@@ -167,22 +160,10 @@
             <div class="pp-about-panel">
                 <span class="pp-eyebrow pp-eyebrow--gold">Why Choose Us</span>
                 <ul class="pp-why-list">
-                    <li>
-                        <span class="pp-why-dot"></span>
-                        Authentic luxury fragrances
-                    </li>
-                    <li>
-                        <span class="pp-why-dot"></span>
-                        Expert curation and advice
-                    </li>
-                    <li>
-                        <span class="pp-why-dot"></span>
-                        Discreet worldwide shipping
-                    </li>
-                    <li>
-                        <span class="pp-why-dot"></span>
-                        Satisfaction guarantee
-                    </li>
+                    <li><span class="pp-why-dot"></span>Authentic luxury fragrances</li>
+                    <li><span class="pp-why-dot"></span>Expert curation and advice</li>
+                    <li><span class="pp-why-dot"></span>Discreet worldwide shipping</li>
+                    <li><span class="pp-why-dot"></span>Satisfaction guarantee</li>
                 </ul>
             </div>
 

@@ -9,7 +9,7 @@ class HomeController extends Controller
 {
     public function index(Request $request)
     {
-        $search   = $request->search;
+        $search   = trim($request->search);
         $category = $request->category;
 
         $featuredProducts = null;
@@ -18,20 +18,23 @@ class HomeController extends Controller
         if ($search || $category) {
 
             if ($search) {
-                $productIds = Product::search($search)->keys();
-
-                $searchProducts = Product::with('productImages', 'supplier', 'category')
-                    ->whereIn('product_id', $productIds)
-                    ->where('is_active', 1)
-                    ->when($category, fn($q) => $q->where('category_id', $category))
-                    ->paginate(12)
+                // Laravel Scout search with Eloquent constraints via query()
+                $searchProducts = Product::search($search)
+                    ->query(fn ($q) => $q
+                        ->with('productImages', 'supplier', 'category')
+                        ->where('is_active', 1)
+                        ->when($category, fn ($q) => $q->where('category_id', $category))
+                    )
+                    ->paginate(6)
                     ->withQueryString();
+
             } else {
-                // category filter only, no search term
+                // Category filter only — no search term, plain Eloquent
                 $searchProducts = Product::with('productImages', 'supplier', 'category')
                     ->where('is_active', 1)
                     ->where('category_id', $category)
-                    ->paginate(12)
+                    ->latest('product_id')
+                    ->paginate(6)
                     ->withQueryString();
             }
 

@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Route;
 // ── Home ────────────────────────────────────────────────────────────────────
 
 Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::get('/home', fn() => redirect('/'));
 
 // ── Auth ─────────────────────────────────────────────────────────────────────
 
@@ -100,6 +101,7 @@ Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.'
 
     // ── Orders ──
     Route::get('/orders',                    [AdminController::class, 'orders'])->name('orders.index');
+    Route::get('/orders/data',               [AdminController::class, 'ordersData'])->name('orders.data');
     Route::get('/orders/{id}',               [AdminController::class, 'showOrder'])->name('orders.show');
     Route::patch('/orders/{id}/status',      [AdminController::class, 'updateOrderStatus'])->name('orders.updateStatus');
 

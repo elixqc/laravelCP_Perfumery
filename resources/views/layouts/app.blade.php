@@ -15,6 +15,41 @@
 <body>
 <div id="app">
 
+    {{-- ── SEARCH OVERLAY ── --}}
+    <div class="pp-search-overlay" id="searchOverlay" aria-hidden="true">
+        <div class="pp-search-overlay__inner">
+            <div class="pp-hero-rule">
+                <span></span>
+                <em>Discover</em>
+                <span></span>
+            </div>
+            <h2 class="pp-search-overlay__heading">Find Your Signature Scent</h2>
+            <form method="GET" action="{{ route('home') }}" class="pp-search-bar">
+                <input
+                    type="text"
+                    name="search"
+                    placeholder="Search fragrances..."
+                    value="{{ request('search') }}"
+                    class="pp-search-bar__input"
+                    id="searchInput"
+                    autocomplete="off"
+                >
+                <select name="category" class="pp-search-bar__select">
+                    <option value="">All Categories</option>
+                    @foreach(App\Models\Category::all() as $category)
+                        <option value="{{ $category->category_id }}"
+                            {{ request('category') == $category->category_id ? 'selected' : '' }}>
+                            {{ $category->category_name }}
+                        </option>
+                    @endforeach
+                </select>
+                <button type="submit" class="pp-search-bar__btn">Search</button>
+            </form>
+        </div>
+        <button class="pp-search-overlay__close" id="searchClose" aria-label="Close search">&#10005;</button>
+    </div>
+    <div class="pp-search-backdrop" id="searchBackdrop"></div>
+
     {{-- ── HEADER ── --}}
     <header>
         <div class="header-inner">
@@ -35,6 +70,16 @@
             </a>
 
             <div class="nav-right">
+                {{-- Search trigger --}}
+                <button class="nav-search-btn" id="searchTrigger" aria-label="Open search">
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="5.5" cy="5.5" r="4.5" stroke="currentColor" stroke-width="1.2"/>
+                        <line x1="8.85355" y1="9" x2="13" y2="13.1464" stroke="currentColor" stroke-width="1.2" stroke-linecap="square"/>
+                    </svg>
+                </button>
+
+                <span class="nav-divider"></span>
+
                 @guest
                     @if(Route::has('login'))
                         <a href="{{ route('login') }}" class="nav-link">Sign In</a>
@@ -98,5 +143,35 @@
     </footer>
 
 </div>
+
+<script>
+    const trigger   = document.getElementById('searchTrigger');
+    const overlay   = document.getElementById('searchOverlay');
+    const backdrop  = document.getElementById('searchBackdrop');
+    const closeBtn  = document.getElementById('searchClose');
+    const input     = document.getElementById('searchInput');
+
+    function openSearch() {
+        overlay.classList.add('is-open');
+        backdrop.classList.add('is-open');
+        overlay.setAttribute('aria-hidden', 'false');
+        setTimeout(() => input.focus(), 300);
+    }
+
+    function closeSearch() {
+        overlay.classList.remove('is-open');
+        backdrop.classList.remove('is-open');
+        overlay.setAttribute('aria-hidden', 'true');
+    }
+
+    trigger.addEventListener('click', openSearch);
+    closeBtn.addEventListener('click', closeSearch);
+    backdrop.addEventListener('click', closeSearch);
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closeSearch();
+    });
+</script>
+
 </body>
 </html>
