@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rules\Password;
 
 class AuthController extends Controller
 {
@@ -18,8 +19,12 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'email' => 'required|email',
+            'email'    => 'required|email',
             'password' => 'required',
+        ], [
+            'email.required'    => 'Email address is required.',
+            'email.email'       => 'Please enter a valid email address.',
+            'password.required' => 'Password is required.',
         ]);
 
         if ($validator->fails()) {
@@ -29,10 +34,8 @@ class AuthController extends Controller
         if (Auth::attempt(['email' => $request->email, 'password' => $request->password, 'is_active' => true])) {
             $request->session()->regenerate();
 
-            // Redirect based on user role
             $user = Auth::user();
 
-            // Only allow access after email verification
             if (! $user->hasVerifiedEmail()) {
                 return redirect()->route('verification.notice')
                     ->with('warning', 'Please verify your email address before continuing.');
@@ -45,7 +48,7 @@ class AuthController extends Controller
             return redirect()->route('orders.index');
         }
 
-        return back()->withErrors(['email' => 'Invalid credentials'])->withInput();
+        return back()->withErrors(['email' => 'Invalid credentials or account is inactive.'])->withInput();
     }
 
     public function showRegister()
@@ -56,20 +59,81 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'username'        => 'required|unique:users',
-            'full_name'       => 'required',
-            'email'           => 'required|email|unique:users',
-            'password'        => 'required|min:6|confirmed',
-            'contact_number'  => 'nullable',
-            'address'         => 'nullable',
-            'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'username' => [
+                'required',
+                'string',
+                'min:3',
+                'max:50',
+                'alpha_dash',                   // letters, numbers, hyphens, underscores only
+                'unique:users,username',
+            ],
+            'full_name' => [
+                'required',
+                'string',
+                'min:2',
+                'max:100',
+                'regex:/^[\pL\s\'\-\.]+$/u',    // letters, spaces, apostrophes, hyphens, dots
+            ],
+            'email' => [
+                'required',
+                'email',
+                'max:255',
+                'unique:users,email',
+            ],
+            'password' => [
+                'required',
+                'confirmed',
+                Password::min(8)
+                    ->letters()
+                    ->mixedCase()
+                    ->numbers(),
+            ],
+            'contact_number' => [
+                'nullable',
+                'string',
+                'max:20',
+                'regex:/^[0-9\+\-\s\(\)]+$/',  // digits, +, -, spaces, parentheses only
+            ],
+            'address' => [
+                'nullable',
+                'string',
+                'min:5',
+                'max:500',
+            ],
+            'profile_picture' => [
+                'nullable',
+                'image',
+                'mimes:jpg,jpeg,png,webp',
+                'max:2048',
+            ],
+        ], [
+            'username.required'      => 'Username is required.',
+            'username.min'           => 'Username must be at least 3 characters.',
+            'username.max'           => 'Username cannot exceed 50 characters.',
+            'username.alpha_dash'    => 'Username may only contain letters, numbers, hyphens, and underscores.',
+            'username.unique'        => 'This username is already taken.',
+            'full_name.required'     => 'Full name is required.',
+            'full_name.min'          => 'Full name must be at least 2 characters.',
+            'full_name.max'          => 'Full name cannot exceed 100 characters.',
+            'full_name.regex'        => 'Full name may only contain letters, spaces, apostrophes, hyphens, and dots.',
+            'email.required'         => 'Email address is required.',
+            'email.email'            => 'Please enter a valid email address.',
+            'email.unique'           => 'An account with this email already exists.',
+            'password.required'      => 'Password is required.',
+            'password.confirmed'     => 'Passwords do not match.',
+            'contact_number.max'     => 'Contact number cannot exceed 20 characters.',
+            'contact_number.regex'   => 'Contact number may only contain digits, +, -, spaces, and parentheses.',
+            'address.min'            => 'Address must be at least 5 characters.',
+            'address.max'            => 'Address cannot exceed 500 characters.',
+            'profile_picture.image'  => 'Profile picture must be a valid image.',
+            'profile_picture.mimes'  => 'Profile picture must be JPG, PNG, or WEBP.',
+            'profile_picture.max'    => 'Profile picture must not exceed 2MB.',
         ]);
 
         if ($validator->fails()) {
             return back()->withErrors($validator)->withInput();
         }
 
-        // Handle profile picture upload
         $profilePicturePath = null;
         if ($request->hasFile('profile_picture')) {
             $profilePicturePath = $request->file('profile_picture')->store('profile_pictures', 'public');

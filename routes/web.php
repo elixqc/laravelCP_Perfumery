@@ -26,7 +26,6 @@ Route::post('/logout',  [AuthController::class, 'logout'])->name('logout');
 Auth::routes(['verify' => true, 'register' => false, 'login' => false, 'reset' => true]);
 
 // ── Products (public) ────────────────────────────────────────────────────────
-
 Route::get('/products',      [ProductController::class, 'index'])->name('products.index');
 Route::get('/products/{id}', [ProductController::class, 'show'])->name('products.show');
 
@@ -71,6 +70,8 @@ Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.'
     Route::get('/products/import',         [ProductController::class, 'importForm'])->name('products.importForm');
     Route::post('/products/import',        [ProductController::class, 'import'])->name('products.import');
 
+    Route::get('/products/data',           [AdminController::class, 'productsData'])->name('products.data');
+
     Route::get('/products',                [AdminController::class,  'products'])->name('products.index');
     Route::post('/products',               [AdminController::class,  'storeProduct'])->name('products.store');
     Route::get('/products/{id}/edit',      [AdminController::class,  'editProduct'])->name('products.edit');
@@ -86,7 +87,9 @@ Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.'
     Route::delete('/reviews/{reviewId}', [AdminController::class, 'destroyProductReview'])->name('products.reviews.destroy');
 
     // ── Suppliers ──
+    
     Route::get('/suppliers/create',        [AdminController::class, 'createSupplier'])->name('suppliers.create');
+    Route::get('/suppliers/data',          [AdminController::class, 'suppliersData'])->name('suppliers.data');
     Route::get('/suppliers',               [AdminController::class, 'suppliers'])->name('suppliers.index');
     Route::post('/suppliers',              [AdminController::class, 'storeSupplier'])->name('suppliers.store');
     Route::get('/suppliers/{id}/edit',     [AdminController::class, 'editSupplier'])->name('suppliers.edit');
