@@ -324,7 +324,7 @@
     <div class="totals">
         <div class="totals-row">
             <span class="totals-label">Subtotal</span>
-            <span class="totals-value">PHP {{ number_format($order->total_amount, 2) }}</span>
+            <span class="totals-value">PHP {{ number_format($order->calculated_total, 2) }}</span>
         </div>
         <div class="totals-row">
             <span class="totals-label">Shipping</span>
@@ -332,7 +332,7 @@
         </div>
         <div class="totals-final">
             <span class="totals-label">Total Paid</span>
-            <span class="totals-value">PHP {{ number_format($order->total_amount, 2) }}</span>
+            <span class="totals-value">PHP {{ number_format($order->calculated_total, 2) }}</span>
         </div>
     </div>
 

@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%231A1714'/><text x='50' y='72' font-size='62' font-family='Georgia,serif' text-anchor='middle' fill='%23B5975A'>P</text></svg>">
     <title>{{ config('app.name', 'Prestige Perfumery') }}</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -78,33 +79,23 @@
                     </svg>
                 </button>
 
-                <span class="nav-divider"></span>
-
                 @guest
-                    @if(Route::has('login'))
-                        <a href="{{ route('login') }}" class="nav-link">Sign In</a>
-                    @endif
-                    @if(Route::has('register'))
-                        <span class="nav-divider"></span>
-                        <a href="{{ route('register') }}" class="nav-link">Register</a>
-                    @endif
-                @else
-                    <a href="{{ route('user.account') }}" class="nav-link nav-account"
-                    style="display:inline-flex; align-items:center; gap:0.5rem;">
-                        @if(Auth::user()->profile_picture)
-                            <img src="{{ asset('storage/' . Auth::user()->profile_picture) }}"
-                                alt="Profile"
-                                style="width:26px; height:26px; border-radius:50%; object-fit:cover; flex-shrink:0; border:1.5px solid var(--stone, #C8BEB2);">
-                        @endif
-                        <span>My Account</span>
-                    </a>
+                    <a href="{{ route('login') }}" class="nav-link">Login</a>
                     <span class="nav-divider"></span>
-                    <a href="{{ route('logout') }}"
-                       onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
-                       class="nav-link">Leave</a>
-                    <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display:none">
-                        @csrf
-                    </form>
+                    <a href="{{ route('register') }}" class="nav-link">Register</a>
+                @else
+                    @if(Auth::user()->role === 'admin')
+                        <a href="{{ route('admin.dashboard') }}" class="nav-link">Back to Dashboard</a>
+                    @else
+                        <a href="{{ route('profile.edit') }}" class="nav-link" style="display:inline-flex;align-items:center;gap:0.5rem;">
+                            <img src="{{ Auth::user()->profile_photo_url ?? asset('images/default-avatar.png') }}" alt="Profile" style="width:28px;height:28px;border-radius:50%;object-fit:cover;vertical-align:middle;">
+                            Edit Profile
+                        </a>
+                    @endif
+                    <span class="nav-divider"></span>
+                    <a href="{{ route('logout') }}" class="nav-link"
+                       onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Logout</a>
+                    <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display:none;">@csrf</form>
                 @endguest
             </div>
 

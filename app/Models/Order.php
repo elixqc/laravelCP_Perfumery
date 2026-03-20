@@ -14,21 +14,19 @@ class Order extends Model
     protected $table = 'orders';
     protected $primaryKey = 'order_id';
 
-    protected $fillable = [
-        'user_id',
-        'order_date',
-        'order_status',
-        'date_received',
-        'delivery_address',
-        'payment_method',
-        'payment_reference',
-        'total_amount',
-    ];
+	protected $fillable = [
+		'user_id',
+		'order_date',
+		'order_status',
+		'date_received',
+		'delivery_address',
+		'payment_method',
+		'payment_reference',
+	];
 
-    protected $casts = [
-        'order_date' => 'datetime',
-        'total_amount' => 'decimal:2',
-    ];
+	protected $casts = [
+		'order_date' => 'datetime',
+	];
 
     // Relationships
     public function user()

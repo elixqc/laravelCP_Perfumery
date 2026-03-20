@@ -31,7 +31,7 @@
                         $firstImage = $item->product->productImages->first();
                         $imageUrl = $firstImage
                             ? asset('storage/' . $firstImage->image_path)
-                            : ($item->product->image_path ? asset('storage/' . $item->product->image_path) : null);
+                            : null;
                     @endphp
 
                     <div class="pp-cart-item">

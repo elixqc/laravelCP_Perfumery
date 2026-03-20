@@ -139,7 +139,7 @@
                         $firstImage = $product->productImages->first();
                         $imageUrl   = $firstImage
                             ? asset('storage/' . $firstImage->image_path)
-                            : ($product->image_path ? asset('storage/' . $product->image_path) : null);
+                            : null;
 
                         [$priceWhole, $priceDec] = explode('.', number_format($product->selling_price, 2));
                     @endphp

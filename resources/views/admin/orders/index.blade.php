@@ -200,7 +200,9 @@ document.addEventListener('DOMContentLoaded', () => {
             },
             {
                 data: 'total',
-                name: 'total_amount',
+                name: 'total',
+                orderable: false,
+                searchable: false,
             },
             {
                 data: 'status',

@@ -52,6 +52,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Account management
     Route::get('/account',            [UserAccountController::class, 'show'])->name('user.account');
+    Route::get('/account/edit',       [UserAccountController::class, 'show'])->name('profile.edit');
     Route::put('/account',            [UserAccountController::class, 'update'])->name('user.account.update');
     Route::put('/account/password',   [UserAccountController::class, 'updatePassword'])->name('user.account.password');
 

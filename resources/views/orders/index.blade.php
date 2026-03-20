@@ -51,7 +51,7 @@
                     <div class="pp-order-card-detail">
                         <span class="pp-order-card-detail-label">Total</span>
                         <span class="pp-order-card-detail-value price">
-                            ${{ number_format($order->total_amount ?? 0, 2) }}
+                            ₱{{ number_format($order->orderDetails->sum(fn($d) => $d->quantity * ($d->product->selling_price ?? 0)), 2) }}
                         </span>
                     </div>
                 </div>

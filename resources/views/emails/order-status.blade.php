@@ -118,7 +118,7 @@
                                     Total Amount
                                 </td>
                                 <td align="right" style="font-family:Georgia, serif; font-size:20px; font-weight:300; color:#B5975A; padding:12px 0; border-top:1px solid #2C2825; white-space:nowrap;">
-                                    ₱{{ number_format($order->total_amount, 2) }}
+                                    ₱{{ number_format($order->calculated_total, 2) }}
                                 </td>
                             </tr>
                         </table>

@@ -21,12 +21,18 @@ class Product extends Model
         'initial_price',
         'selling_price',
         'stock_quantity',
-        'image_path',
         'variant',
         'is_active',
         'category_id',
         'supplier_id',
     ];
+
+    // Accessor for main image (first image)
+    public function getMainImagePathAttribute()
+    {
+        $first = $this->productImages->first();
+        return $first ? $first->image_path : null;
+    }
 
     protected $casts = [
         'initial_price' => 'decimal:2',

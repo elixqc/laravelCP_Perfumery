@@ -80,4 +80,12 @@ class User extends Authenticatable implements MustVerifyEmailContract
     {
         return $this->role === 'customer';
     }
+
+    public function getProfilePhotoUrlAttribute()
+    {
+        if ($this->profile_picture) {
+            return asset('storage/' . $this->profile_picture);
+        }
+        return asset('images/default-avatar.png');
+    }
 }

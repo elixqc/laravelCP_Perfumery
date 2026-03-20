@@ -17,7 +17,7 @@ class OrderController extends Controller
 
     public function data(Request $request)
     {
-        $query = Order::with('user', 'orderDetails')
+        $query = Order::with('user', 'orderDetails.product')
             ->select('orders.*');
 
         return DataTables::of($query)
@@ -39,7 +39,7 @@ class OrderController extends Controller
             )
             ->addColumn('total', fn($order) =>
                 "<span style=\"font-family:'Cormorant Garamond',serif; font-size:1.1rem; font-weight:300; color:#1A1714; letter-spacing:0.02em;\">₱"
-                . number_format($order->total_amount, 2)
+                . number_format($order->orderDetails->sum(fn($d) => $d->quantity * ($d->product->selling_price ?? 0)), 2)
                 . "</span>"
             )
             ->addColumn('status', function ($order) {
@@ -87,6 +87,17 @@ class OrderController extends Controller
         }
 
         $order->update(['order_status' => $newStatus]);
+
+        // Decrease product quantity if marking as completed and wasn't completed before
+        if ($previousStatus !== 'completed' && $newStatus === 'completed') {
+            foreach ($order->orderDetails as $detail) {
+                $product = $detail->product;
+                if ($product) {
+                    $product->stock_quantity = max(0, $product->stock_quantity - $detail->quantity);
+                    $product->save();
+                }
+            }
+        }
 
         $notifyStatuses = ['processing', 'completed', 'cancelled'];
 

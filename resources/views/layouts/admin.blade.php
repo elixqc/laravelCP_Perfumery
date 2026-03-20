@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Admin — {{ config('app.name', 'Prestige Perfumery') }}</title>
+    <title>Prestige Perfumery — Admin</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -23,8 +23,8 @@
 
             {{-- LOGO --}}
             <a href="{{ route('admin.dashboard') }}" class="pa-logo">
-                <span class="pa-logo-name">{{ config('app.name', 'Prestige Perfumery') }}</span>
-                <span class="pa-logo-tag">Admin Console</span>
+                <span class="pa-logo-name">Prestige Perfumery</span>
+                <span class="pa-logo-tag">Admin</span>
             </a>
 
             {{-- MAIN NAV --}}

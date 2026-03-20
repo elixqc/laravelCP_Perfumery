@@ -81,8 +81,8 @@
                     @foreach($recentOrders as $order)
                     <tr>
                         <td>#{{ $order->order_id }}</td>
-                        <td>{{ $order->user->name ?? '—' }}</td>
-                        <td>₱{{ number_format($order->total_amount, 2) }}</td>
+                        <td>{{ $order->user->full_name ?? '—' }}</td>
+                        <td>₱{{ number_format($order->orderDetails->sum(fn($d) => $d->quantity * ($d->product->selling_price ?? 0)), 2) }}</td>
                         <td>
                             <span class="pa-status pa-status--{{ strtolower($order->order_status) }}">
                                 {{ ucfirst($order->order_status) }}

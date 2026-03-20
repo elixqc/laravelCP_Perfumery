@@ -37,25 +37,18 @@ class OrderSeeder extends Seeder
                     'user_id' => $user->user_id,
                     'order_date' => $orderDate,
                     'order_status' => 'completed',
-                    'total_amount' => 0, // will update after adding details
                 ]);
 
                 // Add 1-4 random products to the order
-                $orderTotal = 0;
                 $items = $products->random(rand(1, min(4, $products->count())));
                 foreach ($items as $product) {
                     $qty = rand(1, 3);
-                    $subtotal = $product->selling_price * $qty;
                     OrderDetail::create([
                         'order_id' => $order->order_id,
                         'product_id' => $product->product_id,
                         'quantity' => $qty,
-                        'unit_price' => $product->selling_price,
                     ]);
-                    $orderTotal += $subtotal;
                 }
-
-                $order->update(['total_amount' => $orderTotal]);
             }
         }
     }

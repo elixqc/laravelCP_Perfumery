@@ -37,27 +37,18 @@ class TestOrderSeeder extends Seeder
             'user_id'       => $customer->user_id,
             'order_date'    => now(),
             'order_status'  => 'completed',
-            'total_amount'  => 0,
         ]);
 
         // Add order details (line items) for each product
-        $totalAmount = 0;
         foreach ($products as $product) {
             $quantity = rand(1, 3);
             $unitPrice = $product->price;
-            $subtotal = $quantity * $unitPrice;
-            $totalAmount += $subtotal;
-
             \App\Models\OrderDetail::create([
                 'order_id'      => $order->order_id,
                 'product_id'    => $product->product_id,
                 'quantity'      => $quantity,
-                'unit_price'    => $unitPrice,
             ]);
         }
-
-        // Update order total
-        $order->update(['total_amount' => $totalAmount]);
 
         $this->command->info('Test order created successfully!');
         $this->command->info("Order ID: {$order->order_id}, Total: \${$totalAmount}");

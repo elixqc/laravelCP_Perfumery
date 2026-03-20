@@ -184,7 +184,16 @@
                             Total Sales Per Year
                         </h2>
                         <div style="position:relative; height:320px; width:100%;">
-                            {!! $yearlyChart->container() !!}
+                            @php
+                                $yearlyLabels = $yearlyChart->labels ?? [];
+                            @endphp
+                            @if(empty($yearlyLabels))
+                                <div style="display:flex; align-items:center; justify-content:center; height:100%;">
+                                    <span style="font-size:1.1rem; color:var(--stone); font-family:'Jost',sans-serif; font-weight:300;">No yearly sales data available</span>
+                                </div>
+                            @else
+                                {!! $yearlyChart->container() !!}
+                            @endif
                         </div>
                     </div>
                 </div>

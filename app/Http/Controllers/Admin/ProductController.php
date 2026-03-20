@@ -9,6 +9,7 @@ use App\Models\Supplier;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\Facades\DataTables;
+use App\Models\SupplyLog;
 
 class ProductController extends Controller
 {
@@ -177,6 +178,15 @@ class ProductController extends Controller
 
         $product = Product::create($data);
 
+        // Add supply log
+        SupplyLog::create([
+            'product_id'     => $product->product_id,
+            'supplier_id'    => $product->supplier_id,
+            'quantity_added' => $product->stock_quantity,
+            'supplier_price' => $product->initial_price,
+            'remarks'        => 'Initial stock on product creation',
+        ]);
+
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $img) {
                 $path = $img->store('products', 'public');
@@ -241,7 +251,19 @@ class ProductController extends Controller
             $data['selling_price'] = $request->input('price');
         }
 
+        $oldQty = $product->stock_quantity;
         $product->update($data);
+        $newQty = $product->stock_quantity;
+        $qtyDiff = $newQty - $oldQty;
+        if ($qtyDiff > 0) {
+            SupplyLog::create([
+                'product_id'     => $product->product_id,
+                'supplier_id'    => $product->supplier_id,
+                'quantity_added' => $qtyDiff,
+                'supplier_price' => $product->initial_price,
+                'remarks'        => 'Stock increased via product update',
+            ]);
+        }
 
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $img) {
@@ -260,9 +282,7 @@ class ProductController extends Controller
     {
         $product = Product::findOrFail($id);
 
-        if ($product->image_path) {
-            Storage::disk('public')->delete($product->image_path);
-        }
+        // No need to delete $product->image_path, handled by productImages
 
         $product->delete();
 

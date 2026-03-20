@@ -18,11 +18,6 @@ class OrderDetail extends Model
         'order_id',
         'product_id',
         'quantity',
-        'unit_price',
-    ];
-
-    protected $casts = [
-        'unit_price' => 'decimal:2',
     ];
 
     // Relationships
@@ -36,9 +31,9 @@ class OrderDetail extends Model
         return $this->belongsTo(Product::class, 'product_id');
     }
 
-    // Accessor for subtotal
+    // Accessor for subtotal (uses product selling_price)
     public function getSubtotalAttribute()
     {
-        return $this->quantity * $this->unit_price;
+        return $this->quantity * ($this->product->selling_price ?? 0);
     }
 }

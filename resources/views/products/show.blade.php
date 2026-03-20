@@ -49,7 +49,7 @@
                     $firstImg = $images->first();
                     $imageUrl = $firstImg
                         ? asset('storage/' . $firstImg->image_path)
-                        : ($product->image_path ? asset('storage/' . $product->image_path) : null);
+                        : null;
                 @endphp
 
                 @if($imageUrl)

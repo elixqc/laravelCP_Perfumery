@@ -92,10 +92,21 @@ class AdminController extends Controller
                 'rgba(54,162,235,0.7)', 'rgba(255,99,132,0.7)', 'rgba(153,102,255,0.7)', 'rgba(255,159,64,0.7)',
             ]);
 
-        $yearlyData = Order::select(DB::raw('YEAR(order_date) as year'), DB::raw('SUM(total_amount) as total'))
-            ->groupBy(DB::raw('YEAR(order_date)'))
-            ->orderBy('year', 'asc')
-            ->get();
+        // AFTER: Calculate yearly sales using product selling_price
+        $yearlyData = \App\Models\Order::with(['orderDetails.product'])
+            ->get()
+            ->groupBy(function($order) {
+                return $order->order_date ? $order->order_date->format('Y') : null;
+            })
+            ->map(function($orders, $year) {
+                $total = $orders->flatMap->orderDetails->sum(function($detail) {
+                    return $detail->quantity * ($detail->product->selling_price ?? 0);
+                });
+                return (object)['year' => $year, 'total' => $total];
+            })->values();
+
+        // Debug: Log the yearly data
+        \Log::info('Yearly data:', $yearlyData->toArray());
 
         $yearlyChart = new \App\Charts\YearlySalesChart();
         $yearlyChart->labels($yearlyData->pluck('year')->toArray());

@@ -59,9 +59,9 @@
                 @foreach($order->orderDetails as $detail)
                     @php
                         $firstImage = $detail->product->productImages->first();
-                        $imageUrl = $firstImage
-                            ? asset('storage/' . $firstImage->image_path)
-                            : ($detail->product->image_path ? asset('storage/' . $detail->product->image_path) : null);
+                        $imageUrl   = $firstImage ? asset('storage/' . $firstImage->image_path) : null;
+                        $unitPrice  = $detail->product->selling_price ?? 0;
+                        $subtotal   = $detail->quantity * $unitPrice;
                     @endphp
 
                     <div style="display:grid; grid-template-columns:100px 1fr auto; gap:1.5rem; align-items:start; background:#FDFBF8; border:1px solid var(--cream); padding:1.5rem; transition:border-color 0.25s ease;"
@@ -98,7 +98,7 @@
                                 </div>
                                 <div>
                                     <span style="font-size:0.55rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--stone); font-family:'Jost',sans-serif; font-weight:300; display:block; margin-bottom:0.2rem;">Unit Price</span>
-                                    <span style="font-size:0.85rem; color:var(--charcoal); font-family:'Jost',sans-serif; font-weight:300;">${{ number_format($detail->unit_price, 2) }}</span>
+                                    <span style="font-size:0.85rem; color:var(--charcoal); font-family:'Jost',sans-serif; font-weight:300;">₱{{ number_format($unitPrice, 2) }}</span>
                                 </div>
                             </div>
                         </div>
@@ -107,7 +107,7 @@
                         <div style="text-align:right; padding-top:0.25rem;">
                             <span style="font-size:0.55rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--stone); font-family:'Jost',sans-serif; font-weight:300; display:block; margin-bottom:0.3rem;">Subtotal</span>
                             <span style="font-family:'Cormorant Garamond',serif; font-size:1.3rem; font-weight:300; color:var(--gold); letter-spacing:0.02em;">
-                                <sup style="font-size:0.6rem; vertical-align:super;">$</sup>{{ number_format($detail->subtotal, 2) }}
+                                <sup style="font-size:0.6rem; vertical-align:super;">₱</sup>{{ number_format($subtotal, 2) }}
                             </span>
                         </div>
 
@@ -172,7 +172,7 @@
                             Order Total
                         </span>
                         <span style="font-family:'Cormorant Garamond',serif; font-size:1.6rem; font-weight:300; color:var(--gold); letter-spacing:0.02em;">
-                            <sup style="font-size:0.65rem; vertical-align:super;">$</sup>{{ number_format($order->total_amount ?? $order->calculated_total, 2) }}
+                            <sup style="font-size:0.65rem; vertical-align:super;">₱</sup>{{ number_format($order->orderDetails->sum(fn($d) => $d->quantity * ($d->product->selling_price ?? 0)), 2) }}
                         </span>
                     </div>
 
