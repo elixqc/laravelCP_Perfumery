@@ -87,9 +87,16 @@
                         Required
                     </span>
                     <div style="display:flex; flex-wrap:wrap; gap:0.5rem;">
-                        @foreach(['product_name', 'stock_quantity'] as $col)
-                            <code style="font-size:0.82rem; background:#F0EDE8; color:#2C2825; font-family:'Courier New', monospace; padding:0.2rem 0.6rem; border:1px solid #D6D0C8; border-radius:2px;">{{ $col }}</code>
-                        @endforeach
+                        {{-- product_name: required, min:2, max:100 --}}
+                        <div style="display:flex; flex-direction:column; gap:0.2rem;">
+                            <code style="font-size:0.82rem; background:#F0EDE8; color:#2C2825; font-family:'Courier New', monospace; padding:0.2rem 0.6rem; border:1px solid #D6D0C8; border-radius:2px;">product_name</code>
+                            <span style="font-size:0.68rem; color:#8C8078; font-family:'Jost',sans-serif; padding:0 0.2rem;">string, max 100 chars</span>
+                        </div>
+                        {{-- stock_quantity: required, integer, min:0 --}}
+                        <div style="display:flex; flex-direction:column; gap:0.2rem;">
+                            <code style="font-size:0.82rem; background:#F0EDE8; color:#2C2825; font-family:'Courier New', monospace; padding:0.2rem 0.6rem; border:1px solid #D6D0C8; border-radius:2px;">stock_quantity</code>
+                            <span style="font-size:0.68rem; color:#8C8078; font-family:'Jost',sans-serif; padding:0 0.2rem;">integer, min 0</span>
+                        </div>
                     </div>
                 </div>
 
@@ -98,22 +105,53 @@
                     <span style="font-size:0.68rem; letter-spacing:0.18em; text-transform:uppercase; font-family:'Jost',sans-serif; font-weight:500; color:#856404; background:#FEF3CD; padding:0.2rem 0.6rem; border-radius:2px; flex-shrink:0;">
                         Optional
                     </span>
-                    <div style="display:flex; flex-wrap:wrap; gap:0.5rem;">
-                        @foreach(['initial_price', 'selling_price', 'description', 'variant', 'is_active', 'category_id', 'supplier_id'] as $col)
-                            <code style="font-size:0.82rem; background:#F0EDE8; color:#5A524A; font-family:'Courier New', monospace; padding:0.2rem 0.6rem; border:1px solid #D6D0C8; border-radius:2px;">{{ $col }}</code>
+                    <div style="display:flex; flex-wrap:wrap; gap:0.75rem;">
+                        @php
+                            $optionalCols = [
+                                'initial_price'  => 'numeric, min 0',
+                                'selling_price'  => 'numeric, min 0',
+                                'price'          => 'numeric, min 0 (legacy)',
+                                'description'    => 'string, max 2000',
+                                'variant'        => 'string, max 50',
+                                'is_active'      => '1 or 0 (default: 1)',
+                                'category_id'    => 'must exist in categories',
+                                'supplier_id'    => 'must exist in suppliers',
+                            ];
+                        @endphp
+                        @foreach($optionalCols as $col => $hint)
+                            <div style="display:flex; flex-direction:column; gap:0.2rem;">
+                                <code style="font-size:0.82rem; background:#F0EDE8; color:#5A524A; font-family:'Courier New', monospace; padding:0.2rem 0.6rem; border:1px solid #D6D0C8; border-radius:2px;">{{ $col }}</code>
+                                <span style="font-size:0.68rem; color:#8C8078; font-family:'Jost',sans-serif; padding:0 0.2rem;">{{ $hint }}</span>
+                            </div>
                         @endforeach
                     </div>
                 </div>
 
-                {{-- Note --}}
-                <div style="padding:1.2rem 1.5rem; background:#F5F1EC; display:flex; gap:0.75rem; align-items:flex-start;">
+                {{-- Notes --}}
+                <div style="padding:1.2rem 1.5rem; border-bottom:1px solid #EDE8DF; background:#F5F1EC; display:flex; gap:0.75rem; align-items:flex-start;">
                     <span style="font-size:1rem; line-height:1.2; flex-shrink:0;">ℹ</span>
                     <p style="font-size:0.82rem; color:#5A524A; font-family:'Jost',sans-serif; font-weight:400; line-height:1.65; margin:0;">
-                        If both <code style="font-size:0.8rem; background:#E8E3DC; color:#2C2825; font-family:'Courier New',monospace; padding:1px 5px; border-radius:2px;">initial_price</code>
-                        and <code style="font-size:0.8rem; background:#E8E3DC; color:#2C2825; font-family:'Courier New',monospace; padding:1px 5px; border-radius:2px;">selling_price</code>
-                        are provided, <code style="font-size:0.8rem; background:#E8E3DC; color:#2C2825; font-family:'Courier New',monospace; padding:1px 5px; border-radius:2px;">price</code> is ignored.
-                        If only <code style="font-size:0.8rem; background:#E8E3DC; color:#2C2825; font-family:'Courier New',monospace; padding:1px 5px; border-radius:2px;">price</code>
+                        If both
+                        <code style="font-size:0.8rem; background:#E8E3DC; color:#2C2825; font-family:'Courier New',monospace; padding:1px 5px; border-radius:2px;">initial_price</code>
+                        and
+                        <code style="font-size:0.8rem; background:#E8E3DC; color:#2C2825; font-family:'Courier New',monospace; padding:1px 5px; border-radius:2px;">selling_price</code>
+                        are provided,
+                        <code style="font-size:0.8rem; background:#E8E3DC; color:#2C2825; font-family:'Courier New',monospace; padding:1px 5px; border-radius:2px;">price</code>
+                        is ignored. If only
+                        <code style="font-size:0.8rem; background:#E8E3DC; color:#2C2825; font-family:'Courier New',monospace; padding:1px 5px; border-radius:2px;">price</code>
                         is provided, it will be used for both cost and selling price fields.
+                    </p>
+                </div>
+
+                {{-- Validation errors note --}}
+                <div style="padding:1.2rem 1.5rem; background:#F8EEEE; display:flex; gap:0.75rem; align-items:flex-start;">
+                    <span style="font-size:1rem; line-height:1.2; flex-shrink:0; color:#8B3A3A;">⚠</span>
+                    <p style="font-size:0.82rem; color:#8B3A3A; font-family:'Jost',sans-serif; font-weight:400; line-height:1.65; margin:0;">
+                        Rows with validation errors will be skipped. Error messages will reference the row number and field that failed. Ensure
+                        <code style="font-size:0.8rem; background:#F0DEDE; color:#8B3A3A; font-family:'Courier New',monospace; padding:1px 5px; border-radius:2px;">category_id</code>
+                        and
+                        <code style="font-size:0.8rem; background:#F0DEDE; color:#8B3A3A; font-family:'Courier New',monospace; padding:1px 5px; border-radius:2px;">supplier_id</code>
+                        values already exist in the database before importing.
                     </p>
                 </div>
 

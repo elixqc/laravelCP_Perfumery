@@ -342,9 +342,10 @@
 
             // Per-page breakdowns (counts within the current page only)
             const data = json.data || [];
-            const active   = data.filter(u => parseInt(u.is_active) === 1).length;
-            const inactive = data.filter(u => parseInt(u.is_active) === 0).length;
-            const admins   = data.filter(u => u.role === 'admin').length;  // 'admin' not 'Admin' — raw value
+            // CORRECT — use the raw value columns the controller sends
+            const active   = data.filter(u => parseInt(u.is_active_raw) === 1).length;
+            const inactive = data.filter(u => parseInt(u.is_active_raw) === 0).length;
+            const admins   = data.filter(u => u.role_raw === 'admin').length;
 
             document.getElementById('stat-active').textContent   = active   || '0';
             document.getElementById('stat-inactive').textContent = inactive || '0';
