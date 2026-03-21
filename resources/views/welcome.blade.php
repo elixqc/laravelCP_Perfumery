@@ -180,10 +180,10 @@
         </div>
 
         <div class="pp-cat-grid">
-            @foreach(['Men', 'Women', 'Unisex', 'Designer'] as $category)
-                <a href="{{ route('products.index', ['category' => strtolower($category)]) }}" class="pp-cat-card">
+            @foreach($categories as $cat)
+                <a href="{{ route('products.index', ['category' => $cat->category_id]) }}" class="pp-cat-card">
                     <span class="pp-cat-icon">◈</span>
-                    <span class="pp-cat-name">{{ $category }}</span>
+                    <span class="pp-cat-name">{{ $cat->category_name }}</span>
                     <span class="pp-cat-arrow">→</span>
                 </a>
             @endforeach

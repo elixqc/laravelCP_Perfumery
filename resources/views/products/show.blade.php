@@ -38,7 +38,7 @@
 </section>
 
 {{-- ── PRODUCT DETAIL ── --}}
-<section style="background:var(--ivory); padding:5rem 2.5rem;">
+<section style="background:var(--white); padding:5rem 2.5rem;">
     <div style="max-width:1200px; margin:0 auto;">
         <div style="display:grid; grid-template-columns:55% 1fr; gap:6rem; align-items:start;">
 

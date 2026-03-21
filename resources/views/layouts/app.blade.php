@@ -136,11 +136,12 @@
 </div>
 
 <script>
-    const trigger   = document.getElementById('searchTrigger');
-    const overlay   = document.getElementById('searchOverlay');
-    const backdrop  = document.getElementById('searchBackdrop');
-    const closeBtn  = document.getElementById('searchClose');
-    const input     = document.getElementById('searchInput');
+    /* ── SEARCH OVERLAY ── */
+    const trigger  = document.getElementById('searchTrigger');
+    const overlay  = document.getElementById('searchOverlay');
+    const backdrop = document.getElementById('searchBackdrop');
+    const closeBtn = document.getElementById('searchClose');
+    const input    = document.getElementById('searchInput');
 
     function openSearch() {
         overlay.classList.add('is-open');
@@ -158,10 +159,19 @@
     trigger.addEventListener('click', openSearch);
     closeBtn.addEventListener('click', closeSearch);
     backdrop.addEventListener('click', closeSearch);
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSearch(); });
 
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') closeSearch();
-    });
+    /* ── TRANSPARENT HEADER ── */
+    const header = document.querySelector('header');
+    const hero   = document.querySelector('.pp-hero--home');
+
+    if (hero) {
+        const onScroll = () => {
+            header.classList.toggle('is-transparent', window.scrollY < 10);
+        };
+        onScroll(); // apply immediately on load
+        window.addEventListener('scroll', onScroll, { passive: true });
+    }
 </script>
 
 </body>

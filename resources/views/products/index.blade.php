@@ -202,7 +202,7 @@
    FILTER BAR
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 .pf-bar {
-    background: #F8F5F0;
+    background: #ffffff;
     border-top: 1px solid #EDE8DF;
     border-bottom: 1px solid #EDE8DF;
     padding: 1.75rem 2.5rem;

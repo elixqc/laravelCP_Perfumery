@@ -44,6 +44,11 @@
                     Suppliers
                 </a>
                 <span class="pa-nav-divider"></span>
+                <a href="{{ route('admin.categories.index') }}"
+                   class="pa-nav-link {{ request()->routeIs('admin.categories.*') ? 'pa-nav-link--active' : '' }}">
+                    Categories
+                </a>
+                <span class="pa-nav-divider"></span>
                 <a href="{{ route('admin.users.index') }}"
                    class="pa-nav-link {{ request()->routeIs('admin.users.*') ? 'pa-nav-link--active' : '' }}">
                     Users

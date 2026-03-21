@@ -3,6 +3,31 @@
 @section('title', 'Products — Prestige Admin')
 
 @section('content')
+
+{{-- ── Toast stack ── --}}
+<div id="pa-toast-stack"></div>
+
+{{-- ── Delete confirmation modal ── --}}
+<div class="pa-overlay" id="pa-delete-overlay" aria-modal="true" role="dialog">
+    <div class="pa-modal" id="pa-delete-modal">
+        <div class="pa-modal__head">
+            <span class="pa-modal__eyebrow">Irreversible action</span>
+            <h2 class="pa-modal__title">Archive this product?</h2>
+        </div>
+        <div class="pa-modal__body">
+            <span class="pa-modal__product-name" id="pa-modal-product-name">—</span>
+            <p class="pa-modal__text">
+                This product will be soft-deleted and hidden from the storefront.
+                It can be restored at any time from the archive.
+            </p>
+        </div>
+        <div class="pa-modal__foot">
+            <button class="pa-modal__cancel" id="pa-modal-cancel">Cancel</button>
+            <button class="pa-modal__confirm" id="pa-modal-confirm">Archive product</button>
+        </div>
+    </div>
+</div>
+
 <div class="pa-page">
 
     {{-- ── Page Header ── --}}
@@ -11,17 +36,11 @@
             <span class="pa-page-eyebrow">Inventory</span>
             <h1 class="pa-page-title">Products</h1>
         </div>
-        <div style="display:flex; gap:0.75rem; align-items:center;">
-            <a href="{{ route('admin.products.importForm') }}"
-               style="background:transparent; color:#5A524A; border:1.5px solid #B0A898; font-family:'Jost',sans-serif; font-size:0.82rem; font-weight:400; letter-spacing:0.06em; text-transform:uppercase; padding:0.65rem 1.5rem; text-decoration:none; transition:border-color 0.25s,color 0.25s; display:inline-block; border-radius:2px; white-space:nowrap;"
-               onmouseover="this.style.borderColor='#B5975A'; this.style.color='#B5975A'"
-               onmouseout="this.style.borderColor='#B0A898'; this.style.color='#5A524A'">
+        <div class="pa-page-actions">
+            <a href="{{ route('admin.products.importForm') }}" class="pa-btn-outline">
                 Import Products
             </a>
-            <a href="{{ route('admin.products.create') }}"
-               style="background:#2C2825; color:#F8F5F0; border:1.5px solid #2C2825; font-family:'Jost',sans-serif; font-size:0.82rem; font-weight:500; letter-spacing:0.06em; text-transform:uppercase; padding:0.65rem 1.5rem; text-decoration:none; transition:background 0.25s,color 0.25s; display:inline-block; border-radius:2px; white-space:nowrap;"
-               onmouseover="this.style.background='#B5975A'; this.style.borderColor='#B5975A'; this.style.color='#1A1714'"
-               onmouseout="this.style.background='#2C2825'; this.style.borderColor='#2C2825'; this.style.color='#F8F5F0'">
+            <a href="{{ route('admin.products.create') }}" class="pa-btn-primary">
                 + Add Product
             </a>
         </div>
@@ -30,38 +49,42 @@
     {{-- ── Table Section ── --}}
     <div class="pa-section">
 
-        {{-- Stats row --}}
-        <div style="display:flex; gap:1px; background:#D6D0C8; border:1px solid #D6D0C8; margin-bottom:2rem;">
-            <div style="background:#FDFBF8; padding:1.2rem 1.8rem; flex:1;">
-                <span style="font-size:0.68rem; letter-spacing:0.18em; text-transform:uppercase; color:#8C8078; font-family:'Jost',sans-serif; font-weight:300; display:block; margin-bottom:0.3rem;">Total Products</span>
-                <span id="stat-total" style="font-family:'Cormorant Garamond',serif; font-size:2rem; font-weight:300; color:#1A1714; line-height:1;">—</span>
+        {{-- Stats Ribbon --}}
+        <div class="pa-stats-ribbon">
+            <div class="pa-stat-tile">
+                <span class="pa-stat-tile__label">Total Products</span>
+                <span class="pa-stat-tile__value" id="stat-total">—</span>
+                <span class="pa-stat-tile__rule"></span>
             </div>
-            <div style="background:#FDFBF8; padding:1.2rem 1.8rem; flex:1;">
-                <span style="font-size:0.68rem; letter-spacing:0.18em; text-transform:uppercase; color:#8C8078; font-family:'Jost',sans-serif; font-weight:300; display:block; margin-bottom:0.3rem;">Active</span>
-                <span id="stat-active" style="font-family:'Cormorant Garamond',serif; font-size:2rem; font-weight:300; color:#4A6741; line-height:1;">—</span>
+            <div class="pa-stat-tile pa-stat-tile--accent">
+                <span class="pa-stat-tile__label">Active</span>
+                <span class="pa-stat-tile__value" id="stat-active">—</span>
+                <span class="pa-stat-tile__rule"></span>
             </div>
-            <div style="background:#FDFBF8; padding:1.2rem 1.8rem; flex:1;">
-                <span style="font-size:0.68rem; letter-spacing:0.18em; text-transform:uppercase; color:#8C8078; font-family:'Jost',sans-serif; font-weight:300; display:block; margin-bottom:0.3rem;">Inactive</span>
-                <span id="stat-inactive" style="font-family:'Cormorant Garamond',serif; font-size:2rem; font-weight:300; color:#856404; line-height:1;">—</span>
+            <div class="pa-stat-tile pa-stat-tile--muted">
+                <span class="pa-stat-tile__label">Inactive</span>
+                <span class="pa-stat-tile__value" id="stat-inactive">—</span>
+                <span class="pa-stat-tile__rule"></span>
             </div>
-            <div style="background:#1A1714; padding:1.2rem 1.8rem; flex:1;">
-                <span style="font-size:0.68rem; letter-spacing:0.18em; text-transform:uppercase; color:rgba(200,190,178,0.6); font-family:'Jost',sans-serif; font-weight:300; display:block; margin-bottom:0.3rem;">This Page</span>
-                <span id="stat-page" style="font-family:'Cormorant Garamond',serif; font-size:2rem; font-weight:300; color:#B5975A; line-height:1;">—</span>
+            <div class="pa-stat-tile pa-stat-tile--dark">
+                <span class="pa-stat-tile__label">This Page</span>
+                <span class="pa-stat-tile__value" id="stat-page">—</span>
+                <span class="pa-stat-tile__rule pa-stat-tile__rule--gold"></span>
             </div>
         </div>
 
         {{-- Table --}}
-        <div style="border:1px solid #D6D0C8; overflow-x:auto;">
-            <table id="products-table" style="width:100%; border-collapse:collapse; background:#FDFBF8;">
+        <div class="pa-table-shell">
+            <table id="products-table" class="pa-products-table">
                 <thead>
-                    <tr style="border-bottom:2px solid #D6D0C8; background:#F5F1EC;">
-                        <th style="font-size:0.68rem; letter-spacing:0.2em; text-transform:uppercase; color:#8C8078; font-family:'Jost',sans-serif; font-weight:400; padding:1rem 1.2rem; text-align:left; white-space:nowrap;">ID</th>
-                        <th style="font-size:0.68rem; letter-spacing:0.2em; text-transform:uppercase; color:#8C8078; font-family:'Jost',sans-serif; font-weight:400; padding:1rem 1.2rem; text-align:left; white-space:nowrap;">Product Name</th>
-                        <th style="font-size:0.68rem; letter-spacing:0.2em; text-transform:uppercase; color:#8C8078; font-family:'Jost',sans-serif; font-weight:400; padding:1rem 1.2rem; text-align:left; white-space:nowrap;">Cost Price</th>
-                        <th style="font-size:0.68rem; letter-spacing:0.2em; text-transform:uppercase; color:#8C8078; font-family:'Jost',sans-serif; font-weight:400; padding:1rem 1.2rem; text-align:left; white-space:nowrap;">Selling Price</th>
-                        <th style="font-size:0.68rem; letter-spacing:0.2em; text-transform:uppercase; color:#8C8078; font-family:'Jost',sans-serif; font-weight:400; padding:1rem 1.2rem; text-align:left; white-space:nowrap;">Stock</th>
-                        <th style="font-size:0.68rem; letter-spacing:0.2em; text-transform:uppercase; color:#8C8078; font-family:'Jost',sans-serif; font-weight:400; padding:1rem 1.2rem; text-align:left; white-space:nowrap;">Status</th>
-                        <th style="font-size:0.68rem; letter-spacing:0.2em; text-transform:uppercase; color:#8C8078; font-family:'Jost',sans-serif; font-weight:400; padding:1rem 1.2rem; text-align:left; white-space:nowrap;">Actions</th>
+                    <tr>
+                        <th>ID</th>
+                        <th>Product Name</th>
+                        <th>Cost Price</th>
+                        <th>Selling Price</th>
+                        <th>Stock</th>
+                        <th>Status</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody></tbody>
@@ -74,107 +97,174 @@
 
 @section('scripts')
 
-{{-- DataTables --}}
+{{-- ── DataTables CDN (page-specific) ── --}}
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
 <script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 
+{{-- ── DataTables chrome overrides (only these stay here) ── --}}
 <style>
-    /* ── DataTables chrome ── */
+    /* ── Wrapper layout ── */
+    .dataTables_wrapper { padding: 0; }
+
+    .dataTables_wrapper .dataTables_length,
+    .dataTables_wrapper .dataTables_filter {
+        padding: 1.4rem 1.6rem 1.2rem;
+        border-bottom: 1px solid #EEEBE4;
+        background: #FDFBF8;
+    }
+
+    .dataTables_wrapper .dataTables_length { float: left; }
+    .dataTables_wrapper .dataTables_filter { float: right; }
+
     .dataTables_wrapper .dataTables_length,
     .dataTables_wrapper .dataTables_filter,
     .dataTables_wrapper .dataTables_info,
     .dataTables_wrapper .dataTables_paginate {
         font-family: 'Jost', sans-serif;
-        font-size: 0.82rem;
-        color: #5A524A;
-        padding: 1rem 0;
+        font-size: 0.72rem;
+        letter-spacing: 0.06em;
+        color: #8C8078;
+        font-weight: 300;
     }
 
+    .dataTables_wrapper .dataTables_info,
+    .dataTables_wrapper .dataTables_paginate {
+        padding: 1.1rem 1.6rem;
+    }
+
+    /* Clearfix */
+    .dataTables_wrapper::after { content: ''; display: table; clear: both; }
+
+    /* ── Search input ── */
     .dataTables_wrapper .dataTables_filter input {
-        background: #fff;
-        border: 1.5px solid #B0A898;
+        background: #F5F1EC;
+        border: 1px solid #D0C8BE;
         color: #1A1714;
         font-family: 'Jost', sans-serif;
-        font-size: 0.88rem;
-        padding: 0.5rem 0.85rem;
+        font-size: 0.8rem;
+        font-weight: 300;
+        letter-spacing: 0.04em;
+        padding: 0.52rem 0.9rem;
         outline: none;
-        border-radius: 2px;
-        margin-left: 0.5rem;
-        transition: border-color 0.2s;
+        border-radius: 0;
+        margin-left: 0.6rem;
+        min-width: 220px;
+        transition: border-color 0.25s ease, background 0.25s ease;
     }
-    .dataTables_wrapper .dataTables_filter input:focus { border-color: #B5975A; }
+
+    .dataTables_wrapper .dataTables_filter input:focus  { border-color: #B5975A; background: #FDFBF8; }
+    .dataTables_wrapper .dataTables_filter input::placeholder { color: #B0A898; opacity: 1; }
+
+    /* ── Length select ── */
+    .dataTables_wrapper .dataTables_length label { display: flex; align-items: center; }
 
     .dataTables_wrapper .dataTables_length select {
-        background: #fff;
-        border: 1.5px solid #B0A898;
+        background: #F5F1EC;
+        border: 1px solid #D0C8BE;
         color: #1A1714;
         font-family: 'Jost', sans-serif;
-        font-size: 0.88rem;
-        padding: 0.45rem 0.75rem;
+        font-size: 0.8rem;
+        font-weight: 300;
+        padding: 0.45rem 1.6rem 0.45rem 0.6rem;
         outline: none;
-        border-radius: 2px;
-        margin: 0 0.4rem;
+        border-radius: 0;
+        margin: 0 0.5rem;
         cursor: pointer;
+        appearance: none;
+        -webkit-appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='5' viewBox='0 0 8 5'%3E%3Cpath d='M0 0l4 5 4-5z' fill='%23B0A898'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 0.5rem center;
+        background-size: 7px;
+        transition: border-color 0.2s ease;
+    }
+
+    .dataTables_wrapper .dataTables_length select:focus { border-color: #B5975A; }
+
+    /* ── Pagination ── */
+    .dataTables_wrapper .dataTables_paginate {
+        border-top: 1px solid #EEEBE4;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
     }
 
     .dataTables_wrapper .dataTables_paginate .paginate_button {
         font-family: 'Jost', sans-serif !important;
-        font-size: 0.75rem !important;
-        color: #5A524A !important;
+        font-size: 0.68rem !important;
+        letter-spacing: 0.06em !important;
+        color: #8C8078 !important;
         background: transparent !important;
-        border: 1px solid #D6D0C8 !important;
-        border-radius: 2px !important;
-        padding: 0.3rem 0.7rem !important;
-        margin: 0 2px;
+        border: 1px solid transparent !important;
+        border-radius: 0 !important;
+        padding: 0.38rem 0.75rem !important;
+        margin: 0 1px;
         cursor: pointer;
+        transition: all 0.2s ease !important;
+        font-weight: 300 !important;
     }
-    .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
-        background: #B5975A !important;
-        border-color: #B5975A !important;
-        color: #1A1714 !important;
+
+    .dataTables_wrapper .dataTables_paginate .paginate_button:hover:not(.disabled) {
+        background: rgba(181, 151, 90, 0.1) !important;
+        border-color: rgba(181, 151, 90, 0.3) !important;
+        color: #B5975A !important;
     }
+
     .dataTables_wrapper .dataTables_paginate .paginate_button.current,
     .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
-        background: #2C2825 !important;
-        border-color: #2C2825 !important;
+        background: #1A1714 !important;
+        border-color: #1A1714 !important;
         color: #F8F5F0 !important;
     }
+
     .dataTables_wrapper .dataTables_paginate .paginate_button.disabled,
     .dataTables_wrapper .dataTables_paginate .paginate_button.disabled:hover {
-        color: #C8BEB2 !important;
-        border-color: #EDE8DF !important;
+        color: #D0C8BE !important;
+        border-color: transparent !important;
         background: transparent !important;
         cursor: default;
     }
 
+    /* ── Info ── */
+    .dataTables_wrapper .dataTables_info {
+        font-size: 0.68rem;
+        letter-spacing: 0.06em;
+        color: #A09890;
+        font-weight: 300;
+    }
+
+    /* ── Processing ── */
     .dataTables_wrapper .dataTables_processing {
         font-family: 'Jost', sans-serif;
-        font-size: 0.78rem;
-        letter-spacing: 0.12em;
+        font-size: 0.65rem;
+        letter-spacing: 0.3em;
         text-transform: uppercase;
-        color: #8C8078;
-        background: rgba(253,251,248,0.9);
-        border: 1px solid #D6D0C8;
-        padding: 0.75rem 1.5rem;
+        color: #9A9088;
+        background: rgba(253, 251, 248, 0.95);
+        border: 1px solid #E2DDD5;
+        padding: 0.85rem 2rem;
+        top: 50%;
+        box-shadow: 0 4px 24px rgba(26, 23, 20, 0.06);
     }
 
-    /* ── Table rows ── */
-    #products-table tbody tr {
-        border-bottom: 1px solid #EDE8DF;
-        transition: background 0.15s;
+    /* ── Hide DataTables built-in sort icons (prestige.css handles them) ── */
+    table.dataTable thead .sorting:before,
+    table.dataTable thead .sorting:after,
+    table.dataTable thead .sorting_asc:before,
+    table.dataTable thead .sorting_asc:after,
+    table.dataTable thead .sorting_desc:before,
+    table.dataTable thead .sorting_desc:after {
+        display: none !important;
     }
-    #products-table tbody tr:hover  { background: #F5F1EC; }
-    #products-table tbody tr:last-child { border-bottom: none; }
-
-    /* Sorting arrows */
-    #products-table thead th.sorting_asc::after  { content: ' ↑'; color: #B5975A; }
-    #products-table thead th.sorting_desc::after { content: ' ↓'; color: #B5975A; }
 </style>
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
 
+        // ═══════════════════════════════════════════════
+        // DataTables
+        // ═══════════════════════════════════════════════
         const table = $('#products-table').DataTable({
             processing: true,
             serverSide: true,
@@ -189,7 +279,7 @@
                 },
                 error: (xhr, error, thrown) => {
                     console.error('DataTables AJAX error', xhr, error, thrown);
-                    alert('Unable to load products. Please refresh the page.');
+                    showToast({ icon: '✕', iconClass: 'pa-toast__icon--error', title: 'Failed to load products', sub: 'Please refresh the page.' });
                 },
             },
             columns: [
@@ -198,7 +288,7 @@
                     data: 'product_id',
                     name: 'product_id',
                     render: (data) =>
-                        `<span style="font-size:0.78rem; color:#8C8078; font-family:'Jost',sans-serif; font-weight:300;">#${data}</span>`,
+                        `<span class="u-id">#${String(data).padStart(4, '0')}</span>`,
                 },
                 // Product Name + thumbnail (HTML built server-side)
                 {
@@ -235,7 +325,7 @@
                     orderable: false,
                     searchable: false,
                 },
-                // Actions (HTML built server-side)
+                // Actions — delete button wired to modal below
                 {
                     data: 'actions',
                     name: 'actions',
@@ -248,35 +338,153 @@
             language: {
                 search: '',
                 searchPlaceholder: 'Search products…',
-                lengthMenu: 'Show _MENU_ products',
-                info: 'Showing _START_–_END_ of _TOTAL_ products',
+                lengthMenu: 'Display _MENU_ products',
+                info: 'Showing _START_–_END_ of _TOTAL_',
                 infoEmpty: 'No products found',
                 processing: 'Loading…',
-                zeroRecords: `<span style="font-family:'Cormorant Garamond',serif; font-size:1.2rem; font-weight:300; color:#C8BEB2; font-style:italic;">No products match your search</span>`,
+                zeroRecords: 'No products match your search',
+                paginate: { first: '←', last: '→', next: '›', previous: '‹' },
             },
             drawCallback: (settings) => {
                 updateStats(settings);
-            },
-            createdRow: (row) => {
-                $(row).find('td').css({ padding: '1rem 1.2rem', verticalAlign: 'middle' });
+                attachDeleteListeners();
             },
         });
 
-        // ── Stats bar: global counts from server, this-page count from data length ──
+        // ═══════════════════════════════════════════════
+        // Stats ribbon
+        // ═══════════════════════════════════════════════
         function updateStats(settings) {
             const json = settings.json;
             if (!json) return;
 
-            // Global counts sent via ->with('stats', [...]) from the controller
             if (json.stats) {
-                document.getElementById('stat-total').textContent   = json.stats.total   ?? '—';
-                document.getElementById('stat-active').textContent  = json.stats.active  ?? '—';
-                document.getElementById('stat-inactive').textContent= json.stats.inactive?? '—';
+                document.getElementById('stat-total').textContent    = json.stats.total    ?? '—';
+                document.getElementById('stat-active').textContent   = json.stats.active   ?? '—';
+                document.getElementById('stat-inactive').textContent = json.stats.inactive ?? '—';
             }
 
-            // This-page count
             document.getElementById('stat-page').textContent = (json.data || []).length || '0';
         }
+
+        // ═══════════════════════════════════════════════
+        // Delete confirmation modal
+        // ═══════════════════════════════════════════════
+        const overlay     = document.getElementById('pa-delete-overlay');
+        const nameEl      = document.getElementById('pa-modal-product-name');
+        const confirmBtn  = document.getElementById('pa-modal-confirm');
+        const cancelBtn   = document.getElementById('pa-modal-cancel');
+
+        let pendingDeleteId   = null;
+        let pendingDeleteName = null;
+
+        // Re-bind after every DataTables draw (server-side)
+        function attachDeleteListeners() {
+            // Render delete buttons with: class="pa-product-delete" data-product-id="ID" data-product-name="NAME"
+            document.querySelectorAll('.pa-product-delete').forEach(btn => {
+                btn.removeEventListener('click', onDeleteClick);
+                btn.addEventListener('click', onDeleteClick);
+            });
+        }
+
+        function onDeleteClick(e) {
+            e.preventDefault();
+            pendingDeleteId   = this.dataset.productId;
+            pendingDeleteName = this.dataset.productName || 'this product';
+            nameEl.textContent = pendingDeleteName;
+            openModal();
+        }
+
+        function openModal() {
+            overlay.classList.add('pa-overlay--visible');
+            // Trap focus on confirm button
+            setTimeout(() => confirmBtn.focus(), 320);
+        }
+
+        function closeModal() {
+            overlay.classList.remove('pa-overlay--visible');
+            pendingDeleteId   = null;
+            pendingDeleteName = null;
+        }
+
+        // Close on backdrop click
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) closeModal();
+        });
+
+        // Close on Escape
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && overlay.classList.contains('pa-overlay--visible')) closeModal();
+        });
+
+        cancelBtn.addEventListener('click', closeModal);
+
+        // Confirm — send DELETE request
+        confirmBtn.addEventListener('click', () => {
+            if (!pendingDeleteId) return;
+
+            const id   = pendingDeleteId;
+            const name = pendingDeleteName;
+
+            confirmBtn.disabled    = true;
+            confirmBtn.textContent = 'Archiving…';
+
+            axios.delete(`/admin/products/${id}`, {
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                },
+            })
+            .then(() => {
+                closeModal();
+                table.ajax.reload(null, false);
+                showToast({
+                    icon: '◌',
+                    iconClass: 'pa-toast__icon--delete',
+                    title: `<strong>${name}</strong> archived`,
+                    sub: 'Product soft-deleted successfully',
+                });
+            })
+            .catch((err) => {
+                closeModal();
+                const msg = err.response?.data?.message || 'Delete failed. Please try again.';
+                showToast({ icon: '✕', iconClass: 'pa-toast__icon--error', title: 'Archive failed', sub: msg });
+            })
+            .finally(() => {
+                confirmBtn.disabled    = false;
+                confirmBtn.textContent = 'Archive product';
+            });
+        });
+
+        // ═══════════════════════════════════════════════
+        // Toast
+        // ═══════════════════════════════════════════════
+        function showToast({ icon, iconClass, title, sub }) {
+            const stack = document.getElementById('pa-toast-stack');
+            const toast = document.createElement('div');
+            toast.className = 'pa-toast';
+            toast.innerHTML = `
+                <span class="pa-toast__icon ${iconClass}">${icon}</span>
+                <div class="pa-toast__body">
+                    <span class="pa-toast__title">${title}</span>
+                    <span class="pa-toast__sub">${sub}</span>
+                </div>
+                <button class="pa-toast__close" aria-label="Dismiss">&#x2715;</button>
+            `;
+
+            stack.appendChild(toast);
+            requestAnimationFrame(() => requestAnimationFrame(() => toast.classList.add('pa-toast--in')));
+
+            const timer = setTimeout(() => dismiss(toast), 3500);
+            toast.dataset.timer = timer;
+            toast.querySelector('.pa-toast__close').addEventListener('click', () => dismiss(toast));
+
+            function dismiss(el) {
+                clearTimeout(parseInt(el.dataset.timer));
+                el.classList.replace('pa-toast--in', 'pa-toast--out');
+                el.addEventListener('transitionend', () => el.remove(), { once: true });
+            }
+        }
+
     });
 </script>
 @endsection

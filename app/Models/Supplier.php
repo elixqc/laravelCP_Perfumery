@@ -4,10 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Supplier extends Model
 {
     use HasFactory;
+    use SoftDeletes;
 
     public $timestamps = false;
 
@@ -17,10 +19,9 @@ class Supplier extends Model
     protected $fillable = [
         'supplier_name',
         'contact_person',
-        'contact_number',  // ← was 'phone'
+        'contact_number',
         'address',
         'is_active',
-        // 'email' removed — not in your DB
     ];
 
     protected $casts = [
