@@ -191,49 +191,35 @@
 
                 {{-- Add to Cart / Login prompt --}}
                 <div style="padding:2rem 0; border-bottom:1px solid var(--cream);">
-                    @auth
-                        @if($product->stock_quantity > 0)
-                            <form method="POST" action="{{ route('products.addToCart', $product) }}" style="display:flex; flex-direction:column; gap:1.2rem;">
-                                @csrf
-                                <div style="display:flex; align-items:center; gap:0;">
-                                    <button type="button" onclick="stepQty(-1)"
-                                            style="width:42px; height:48px; background:var(--cream); border:1px solid var(--stone); border-right:none; color:var(--charcoal); font-size:1.2rem; cursor:pointer; font-family:'Jost',sans-serif; transition:background 0.2s;"
-                                            onmouseover="this.style.background='var(--stone)'"
-                                            onmouseout="this.style.background='var(--cream)'">−</button>
-                                    <input type="number" id="quantity" name="quantity"
-                                           value="1" min="1" max="{{ $product->stock_quantity }}"
-                                           style="width:60px; height:48px; background:var(--ivory); border:1px solid var(--stone); color:var(--ink); font-family:'Jost',sans-serif; font-size:0.95rem; font-weight:300; padding:0; outline:none; text-align:center; -webkit-appearance:none; appearance:none; border-radius:0;">
-                                    <button type="button" onclick="stepQty(1)"
-                                            style="width:42px; height:48px; background:var(--cream); border:1px solid var(--stone); border-left:none; color:var(--charcoal); font-size:1.2rem; cursor:pointer; font-family:'Jost',sans-serif; transition:background 0.2s;"
-                                            onmouseover="this.style.background='var(--stone)'"
-                                            onmouseout="this.style.background='var(--cream)'">+</button>
-                                </div>
-                                <button type="submit"
-                                        style="background:var(--ink); color:var(--ivory); border:1px solid var(--ink); font-family:'Jost',sans-serif; font-size:0.72rem; font-weight:400; letter-spacing:0.25em; text-transform:uppercase; padding:1.1rem 2rem; cursor:pointer; transition:background 0.25s, color 0.25s, border-color 0.25s; width:100%;"
-                                        onmouseover="this.style.background='var(--gold)'; this.style.borderColor='var(--gold)'; this.style.color='var(--ink)'"
-                                        onmouseout="this.style.background='var(--ink)'; this.style.borderColor='var(--ink)'; this.style.color='var(--ivory)'">
-                                    Add to Cart
-                                </button>
-                            </form>
-                        @else
-                            <button disabled
-                                    style="background:var(--cream); color:var(--stone); border:1px solid var(--stone); font-family:'Jost',sans-serif; font-size:0.72rem; letter-spacing:0.25em; text-transform:uppercase; padding:1.1rem 2rem; width:100%; cursor:not-allowed;">
+                    @if($product->stock_quantity > 0)
+                        <form method="POST" action="{{ route('products.addToCart', $product) }}" style="display:flex; flex-direction:column; gap:1.2rem;">
+                            @csrf
+                            <div style="display:flex; align-items:center; gap:0;">
+                                <button type="button" onclick="stepQty(-1)"
+                                        style="width:42px; height:48px; background:var(--cream); border:1px solid var(--stone); border-right:none; color:var(--charcoal); font-size:1.2rem; cursor:pointer; font-family:'Jost',sans-serif; transition:background 0.2s;"
+                                        onmouseover="this.style.background='var(--stone)'"
+                                        onmouseout="this.style.background='var(--cream)'">−</button>
+                                <input type="number" id="quantity" name="quantity"
+                                       value="1" min="1" max="{{ $product->stock_quantity }}"
+                                       style="width:60px; height:48px; background:var(--ivory); border:1px solid var(--stone); color:var(--ink); font-family:'Jost',sans-serif; font-size:0.95rem; font-weight:300; padding:0; outline:none; text-align:center; -webkit-appearance:none; appearance:none; border-radius:0;">
+                                <button type="button" onclick="stepQty(1)"
+                                        style="width:42px; height:48px; background:var(--cream); border:1px solid var(--stone); border-left:none; color:var(--charcoal); font-size:1.2rem; cursor:pointer; font-family:'Jost',sans-serif; transition:background 0.2s;"
+                                        onmouseover="this.style.background='var(--stone)'"
+                                        onmouseout="this.style.background='var(--cream)'">+</button>
+                            </div>
+                            <button type="submit"
+                                    style="background:var(--ink); color:var(--ivory); border:1px solid var(--ink); font-family:'Jost',sans-serif; font-size:0.72rem; font-weight:400; letter-spacing:0.25em; text-transform:uppercase; padding:1.1rem 2rem; cursor:pointer; transition:background 0.25s, color 0.25s, border-color 0.25s; width:100%;"
+                                    onmouseover="this.style.background='var(--gold)'; this.style.borderColor='var(--gold)'; this.style.color='var(--ink)'"
+                                    onmouseout="this.style.background='var(--ink)'; this.style.borderColor='var(--ink)'; this.style.color='var(--ivory)'">
+                                Add to Cart
+                            </button>
+                        </form>
+                    @else
+                        <button disabled
+                                style="background:var(--cream); color:var(--stone); border:1px solid var(--stone); font-family:'Jost',sans-serif; font-size:0.72rem; letter-spacing:0.25em; text-transform:uppercase; padding:1.1rem 2rem; width:100%; cursor:not-allowed;">
                                 Sold Out
                             </button>
                         @endif
-                    @else
-                        <div style="background:var(--cream); padding:1.75rem; border-left:2px solid var(--gold);">
-                            <p style="font-size:0.82rem; color:var(--charcoal); letter-spacing:0.04em; font-family:'Jost',sans-serif; font-weight:300; margin-bottom:1.2rem; line-height:1.75;">
-                                Please sign in to add this fragrance to your collection.
-                            </p>
-                            <a href="{{ route('login') }}"
-                               style="display:inline-block; background:var(--ink); color:var(--ivory); border:1px solid var(--ink); padding:0.75rem 2rem; font-family:'Jost',sans-serif; font-size:0.65rem; letter-spacing:0.25em; text-transform:uppercase; font-weight:300; text-decoration:none; transition:all 0.25s;"
-                               onmouseover="this.style.background='var(--gold)'; this.style.borderColor='var(--gold)'; this.style.color='var(--ink)'"
-                               onmouseout="this.style.background='var(--ink)'; this.style.borderColor='var(--ink)'; this.style.color='var(--ivory)'">
-                                Sign In
-                            </a>
-                        </div>
-                    @endauth
                 </div>
 
                 {{-- Back link --}}

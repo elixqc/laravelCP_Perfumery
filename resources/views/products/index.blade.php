@@ -150,13 +150,11 @@
                             <div class="pp-card-img-wrap">
                                 <img src="{{ $imageUrl }}" alt="{{ $product->product_name }}" loading="lazy">
                                 <div class="pp-card-overlay">
-                                    @auth
-                                        <form method="POST" action="{{ route('products.addToCart', $product) }}" style="width:100%">
-                                            @csrf
-                                            <input type="hidden" name="quantity" value="1">
-                                            <button type="submit" class="pp-quick-add">— Add to Cart —</button>
-                                        </form>
-                                    @endauth
+                                    <form method="POST" action="{{ route('products.addToCart', $product) }}" style="width:100%">
+                                        @csrf
+                                        <input type="hidden" name="quantity" value="1">
+                                        <button type="submit" class="pp-quick-add">— Add to Cart —</button>
+                                    </form>
                                 </div>
                             </div>
                         @else

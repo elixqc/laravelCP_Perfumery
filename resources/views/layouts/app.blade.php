@@ -57,9 +57,9 @@
 
             <nav class="nav-left">
                 <a href="{{ route('products.index') }}" class="nav-link">Collection</a>
+                <span class="nav-divider"></span>
+                <a href="{{ route('cart.index') }}" class="nav-link">Cart</a>
                 @auth
-                    <span class="nav-divider"></span>
-                    <a href="{{ route('cart.index') }}" class="nav-link">Cart</a>
                     <span class="nav-divider"></span>
                     <a href="{{ route('orders.index') }}" class="nav-link">Orders</a>
                 @endauth
