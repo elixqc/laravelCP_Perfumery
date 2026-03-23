@@ -19,7 +19,6 @@ class Order extends Model
 		'order_date',
 		'order_status',
 		'date_received',
-		'delivery_address',
 		'payment_method',
 		'payment_reference',
 	];

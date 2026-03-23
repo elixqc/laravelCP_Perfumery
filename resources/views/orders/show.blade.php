@@ -158,7 +158,7 @@
 
                         <div>
                             <span style="font-size:0.55rem; letter-spacing:0.25em; text-transform:uppercase; color:var(--gold); font-family:'Jost',sans-serif; font-weight:300; display:block; margin-bottom:0.3rem;">Delivery Address</span>
-                            <span style="font-size:0.85rem; color:var(--charcoal); font-family:'Jost',sans-serif; font-weight:300; line-height:1.6;">{{ $order->delivery_address }}</span>
+                            <span style="font-size:0.85rem; color:var(--charcoal); font-family:'Jost',sans-serif; font-weight:300; line-height:1.6;">{{ $order->user->address }}</span>
                         </div>
 
                     </div>

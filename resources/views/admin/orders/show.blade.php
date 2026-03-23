@@ -190,14 +190,15 @@
                     {{-- Delivery Address --}}
                     <div>
                         <span class="pa-stat-tile__label" style="display:block; margin-bottom:0.35rem;">Delivery Address</span>
-                        <span style="font-size:0.88rem; color:#1A1714; font-family:'Jost',sans-serif; font-weight:300; line-height:1.6;">{{ $order->delivery_address }}</span>
+                        <span style="font-size:0.88rem; color:#1A1714; font-family:'Jost',sans-serif; font-weight:300; line-height:1.6;">{{ $order->user->address }}</span>
                     </div>
 
+                    {{-- Date Received — only shown when order is completed --}}
                     @if($order->date_received)
                         <div>
                             <span class="pa-stat-tile__label" style="display:block; margin-bottom:0.35rem;">Date Received</span>
                             <span style="font-size:0.88rem; color:#4A6741; font-family:'Jost',sans-serif; font-weight:400;">
-                                {{ $order->date_received->format('M d, Y') }}
+                                {{ \Carbon\Carbon::parse($order->date_received)->format('M d, Y') }}
                             </span>
                         </div>
                     @endif

@@ -5,6 +5,9 @@
 @section('content')
 <div class="pa-page">
 
+    {{-- ── Toast stack ── --}}
+    <div id="pa-toast-stack"></div>
+
     {{-- ── Page Header ── --}}
     <div class="pa-page-header">
         <div>
@@ -275,13 +278,15 @@
                         <span style="font-size:0.88rem; font-weight:500; color:#2C2825; font-family:'Jost',sans-serif; display:block; margin-bottom:0.3rem;">Active Product</span>
                         <span style="font-size:0.82rem; color:#8C8078; font-family:'Jost',sans-serif;">Visible to customers on the storefront</span>
                     </div>
-                    <label style="display:flex; align-items:center; gap:0.6rem; cursor:pointer; flex-shrink:0;">
-                        <input type="checkbox" name="is_active" id="is_active" value="1"
-                               {{ old('is_active', $product->is_active) ? 'checked' : '' }}
-                               style="appearance:none; -webkit-appearance:none; width:20px; height:20px; border:2px solid #B0A898; background:#fff; cursor:pointer; transition:border-color 0.2s, background 0.2s; flex-shrink:0; border-radius:2px;"
-                               onchange="this.style.background=this.checked?'#2C2825':'#fff'; this.style.borderColor=this.checked?'#2C2825':'#B0A898'">
-                        <span style="font-size:0.88rem; color:#5A524A; font-family:'Jost',sans-serif; font-weight:400;">Active</span>
-                    </label>
+                    <button type="button"
+                            id="toggle-active-btn"
+                            data-url="{{ route('admin.products.toggleActive', $product->product_id) }}"
+                            data-active="{{ $product->is_active ? '1' : '0' }}"
+                            style="font-family:'Jost',sans-serif; font-size:0.78rem; font-weight:500; letter-spacing:0.1em; text-transform:uppercase; padding:0.6rem 1.4rem; border:none; cursor:pointer; border-radius:2px; transition:background 0.2s, color 0.2s;
+                                background:{{ $product->is_active ? '#4A6741' : '#8B3A3A' }};
+                                color:#fff;">
+                        {{ $product->is_active ? 'Active' : 'Inactive' }}
+                    </button>
                 </div>
             </div>
 
@@ -307,6 +312,32 @@
 </div>
 
 <script>
+    // ── Toast ──────────────────────────────────────────────────────────────────
+    function showToast({ icon, iconClass, title, sub }) {
+        const stack = document.getElementById('pa-toast-stack');
+        const toast = document.createElement('div');
+        toast.className = 'pa-toast';
+        toast.innerHTML = `
+            <span class="pa-toast__icon ${iconClass}">${icon}</span>
+            <div class="pa-toast__body">
+                <span class="pa-toast__title">${title}</span>
+                <span class="pa-toast__sub">${sub}</span>
+            </div>
+            <button class="pa-toast__close" aria-label="Dismiss">&#x2715;</button>
+        `;
+        stack.appendChild(toast);
+        requestAnimationFrame(() => requestAnimationFrame(() => toast.classList.add('pa-toast--in')));
+        const timer = setTimeout(() => dismiss(toast), 3500);
+        toast.dataset.timer = timer;
+        toast.querySelector('.pa-toast__close').addEventListener('click', () => dismiss(toast));
+        function dismiss(el) {
+            clearTimeout(parseInt(el.dataset.timer));
+            el.classList.replace('pa-toast--in', 'pa-toast--out');
+            el.addEventListener('transitionend', () => el.remove(), { once: true });
+        }
+    }
+
+    // ── Field validation ───────────────────────────────────────────────────────
     function setFieldState(input, isError, message) {
         const name  = input.name.replace('[]', '');
         const errEl = document.getElementById(name + '-error');
@@ -330,6 +361,7 @@
         }
     }
 
+    // ── Delete image ───────────────────────────────────────────────────────────
     function deleteImage(btn) {
         if (!confirm('Remove this image?')) return;
         var url = btn.getAttribute('data-url');
@@ -347,16 +379,28 @@
         .then(function(data) {
             if (data.success) {
                 btn.closest('.img-thumb').remove();
+                showToast({
+                    icon: '◌',
+                    iconClass: 'pa-toast__icon--delete',
+                    title: 'Image removed',
+                    sub: 'The image has been deleted successfully.',
+                });
             } else {
                 alert('Could not delete image. Please try again.');
             }
         })
         .catch(function(err) {
             console.error('Delete image error:', err);
-            alert('Could not delete image. Please try again.');
+            showToast({
+                icon: '✕',
+                iconClass: 'pa-toast__icon--error',
+                title: 'Delete failed',
+                sub: 'Could not remove image. Please try again.',
+            });
         });
     }
 
+    // ── Form submit validation ─────────────────────────────────────────────────
     document.getElementById('edit-product-form').addEventListener('submit', function(e) {
         var hasError = false;
 
@@ -393,12 +437,55 @@
         }
     });
 
-    document.addEventListener('DOMContentLoaded', function() {
-        var cb = document.getElementById('is_active');
-        if (cb) {
-            cb.style.background  = cb.checked ? '#2C2825' : '#fff';
-            cb.style.borderColor = cb.checked ? '#2C2825' : '#B0A898';
-        }
+    // ── Toggle active ──────────────────────────────────────────────────────────
+    document.getElementById('toggle-active-btn').addEventListener('click', function () {
+        var btn = this;
+        var url = btn.getAttribute('data-url');
+
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ _method: 'PATCH' }),
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                if (data.is_active) {
+                    btn.textContent      = 'Active';
+                    btn.style.background = '#4A6741';
+                    btn.setAttribute('data-active', '1');
+                    showToast({
+                        icon: '✓',
+                        iconClass: 'pa-toast__icon--success',
+                        title: 'Product activated',
+                        sub: 'Product is now visible on the storefront.',
+                    });
+                } else {
+                    btn.textContent      = 'Inactive';
+                    btn.style.background = '#8B3A3A';
+                    btn.setAttribute('data-active', '0');
+                    showToast({
+                        icon: '◌',
+                        iconClass: 'pa-toast__icon--delete',
+                        title: 'Product deactivated',
+                        sub: 'Product is now hidden from the storefront.',
+                    });
+                }
+            }
+        })
+        .catch(err => {
+            console.error('Toggle error:', err);
+            showToast({
+                icon: '✕',
+                iconClass: 'pa-toast__icon--error',
+                title: 'Toggle failed',
+                sub: 'Could not update product status. Please try again.',
+            });
+        });
     });
 </script>
 

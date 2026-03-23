@@ -68,9 +68,9 @@ Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.'
 
     // ── Products ──
     Route::get('/products/create', [AdminProductController::class, 'create'])->name('products.create');
-    Route::get('/products/trashed', [ProductController::class, 'trashed'])->name('products.trashed');       // ← unchanged
-    Route::get('/products/import', [ProductController::class, 'importForm'])->name('products.importForm'); // ← unchanged
-    Route::post('/products/import', [ProductController::class, 'import'])->name('products.import');         // ← unchanged
+    Route::get('/products/trashed', [ProductController::class, 'trashed'])->name('products.trashed');
+    Route::get('/products/import', [ProductController::class, 'importForm'])->name('products.importForm');
+    Route::post('/products/import', [ProductController::class, 'import'])->name('products.import');
 
     Route::get('/products/data', [AdminProductController::class, 'data'])->name('products.data');
 
@@ -79,8 +79,9 @@ Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.'
     Route::get('/products/{id}/edit', [AdminProductController::class, 'edit'])->name('products.edit');
     Route::patch('/products/{id}', [AdminProductController::class, 'update'])->name('products.update');
     Route::delete('/products/{id}', [AdminProductController::class, 'destroy'])->name('products.destroy');
-    Route::post('/products/{id}/restore', [ProductController::class, 'restore'])->name('products.restore');       // ← unchanged
+    Route::post('/products/{id}/restore', [ProductController::class, 'restore'])->name('products.restore');
     Route::delete('/products/images/{imageId}', [AdminProductController::class, 'destroyImage'])->name('admin.products.images.destroy');
+    Route::patch('products/{id}/toggle-active', [AdminProductController::class, 'toggleActive'])->name('products.toggleActive');
 
     // Product reviews (admin)
     Route::get('/products/{id}/reviews', [AdminController::class, 'productReviews'])->name('products.reviews');
@@ -119,8 +120,8 @@ Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.'
     Route::patch('/orders/{id}/status', [AdminOrderController::class, 'updateStatus'])->name('orders.updateStatus');
 
     // ── Reviews ──
-    Route::get('/reviews', [ProductReviewController::class, 'index'])->name('reviews.index');
-    Route::delete('/reviews/{review}', [ProductReviewController::class, 'destroy'])->name('reviews.destroy');
+    Route::get('/reviews', [AdminReviewController::class, 'index'])->name('reviews.index');
+    Route::delete('/reviews/{id}', [AdminReviewController::class, 'destroy'])->name('reviews.destroy');
 
     // ── Charts / Reports ──
     Route::get('/charts/best-selling', [AdminController::class, 'bestSellingChart'])->name('charts.bestSelling');

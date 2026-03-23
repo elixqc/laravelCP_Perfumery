@@ -334,7 +334,7 @@
                 },
             ],
             order: [[0, 'desc']],
-            pageLength: 10,
+            pageLength: 25,
             language: {
                 search: '',
                 searchPlaceholder: 'Search products…',

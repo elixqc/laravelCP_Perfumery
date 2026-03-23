@@ -298,4 +298,15 @@ class ProductController extends Controller
 
         return response()->json(['success' => true]);
     }
+
+    public function toggleActive($id)
+    {
+        $product = Product::findOrFail($id);
+        $product->update(['is_active' => !$product->is_active]);
+
+        return response()->json([
+            'success' => true,
+            'is_active' => $product->is_active,
+        ]);
+    }
 }

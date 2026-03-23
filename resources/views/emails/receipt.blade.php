@@ -15,7 +15,6 @@
             padding: 40px;
         }
 
-        /* ── Header ── */
         .header {
             text-align: center;
             border-bottom: 1px solid #EDE8DF;
@@ -54,7 +53,6 @@
             color: #C8BEB2;
         }
 
-        /* ── Receipt Title ── */
         .receipt-title {
             text-align: center;
             margin-bottom: 28px;
@@ -76,7 +74,6 @@
             letter-spacing: 2px;
         }
 
-        /* ── Meta grid ── */
         .meta-grid {
             display: table;
             width: 100%;
@@ -91,9 +88,7 @@
             vertical-align: top;
         }
 
-        .meta-col + .meta-col {
-            border-left: 1px solid #EDE8DF;
-        }
+        .meta-col + .meta-col { border-left: 1px solid #EDE8DF; }
 
         .meta-label {
             font-size: 7px;
@@ -109,7 +104,6 @@
             line-height: 1.5;
         }
 
-        /* ── Status badge ── */
         .status-badge {
             display: inline-block;
             font-size: 7px;
@@ -120,10 +114,7 @@
             color: #4A6741;
         }
 
-        /* ── Items table ── */
-        .items-section {
-            margin-bottom: 24px;
-        }
+        .items-section { margin-bottom: 24px; }
 
         .section-label {
             font-size: 7px;
@@ -135,10 +126,7 @@
             border-bottom: 1px solid #EDE8DF;
         }
 
-        table.items {
-            width: 100%;
-            border-collapse: collapse;
-        }
+        table.items { width: 100%; border-collapse: collapse; }
 
         table.items th {
             font-size: 7px;
@@ -162,28 +150,12 @@
             vertical-align: middle;
         }
 
-        table.items td:last-child {
-            text-align: right;
-            color: #1A1714;
-        }
+        table.items td:last-child { text-align: right; color: #1A1714; }
 
-        table.items .product-name {
-            font-size: 11px;
-            color: #1A1714;
-        }
+        .product-name  { font-size: 11px; color: #1A1714; }
+        .product-variant { font-size: 9px; color: #8C8078; margin-top: 2px; }
 
-        table.items .product-variant {
-            font-size: 9px;
-            color: #8C8078;
-            margin-top: 2px;
-        }
-
-        /* ── Totals ── */
-        .totals {
-            margin-left: auto;
-            width: 240px;
-            margin-bottom: 28px;
-        }
+        .totals { margin-left: auto; width: 240px; margin-bottom: 28px; }
 
         .totals-row {
             display: table;
@@ -200,12 +172,7 @@
             color: #8C8078;
         }
 
-        .totals-value {
-            display: table-cell;
-            text-align: right;
-            font-size: 11px;
-            color: #1A1714;
-        }
+        .totals-value { display: table-cell; text-align: right; font-size: 11px; color: #1A1714; }
 
         .totals-final {
             display: table;
@@ -215,19 +182,9 @@
             margin-top: 4px;
         }
 
-        .totals-final .totals-label {
-            font-size: 9px;
-            letter-spacing: 2px;
-            color: #1A1714;
-        }
+        .totals-final .totals-label { font-size: 9px; letter-spacing: 2px; color: #1A1714; }
+        .totals-final .totals-value  { font-size: 18px; color: #B5975A; font-weight: 300; }
 
-        .totals-final .totals-value {
-            font-size: 18px;
-            color: #B5975A;
-            font-weight: 300;
-        }
-
-        /* ── Footer ── */
         .footer {
             text-align: center;
             border-top: 1px solid #EDE8DF;
@@ -235,24 +192,15 @@
             margin-top: 28px;
         }
 
-        .footer p {
-            font-size: 8px;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            color: #C8BEB2;
-            line-height: 1.8;
-        }
-
-        .footer .thank-you {
-            font-size: 11px;
-            color: #8C8078;
-            letter-spacing: 1px;
-            margin-bottom: 6px;
-            font-style: italic;
-        }
+        .footer p { font-size: 8px; letter-spacing: 2px; text-transform: uppercase; color: #C8BEB2; line-height: 1.8; }
+        .footer .thank-you { font-size: 11px; color: #8C8078; letter-spacing: 1px; margin-bottom: 6px; font-style: italic; }
     </style>
 </head>
 <body>
+
+@php
+    $orderTotal = $order->orderDetails->sum(fn($d) => $d->quantity * ($d->product?->selling_price ?? 0));
+@endphp
 
     {{-- ── Header ── --}}
     <div class="header">
@@ -284,13 +232,16 @@
             <p class="meta-label">Order Details</p>
             <p class="meta-value">
                 Date: {{ $order->order_date->format('F d, Y') }}<br>
-                Payment: {{ ucfirst($order->payment_method) }}<br>
+                Payment: {{ strtoupper($order->payment_method) }}<br>
+                @if($order->payment_reference)
+                    Ref: {{ $order->payment_reference }}<br>
+                @endif
                 Status: <span class="status-badge">Completed</span>
             </p>
         </div>
     </div>
 
-    {{-- ── Items ── --}}
+    {{-- ── Items — price from product.selling_price ── --}}
     <div class="items-section">
         <p class="section-label">Items Ordered</p>
         <table class="items">
@@ -304,16 +255,20 @@
             </thead>
             <tbody>
                 @foreach($order->orderDetails as $detail)
+                @php
+                    $unitPrice = $detail->product?->selling_price ?? 0;
+                    $lineTotal = $detail->quantity * $unitPrice;
+                @endphp
                 <tr>
                     <td>
-                        <div class="product-name">{{ $detail->product->product_name ?? 'Product' }}</div>
-                        @if($detail->product->variant)
+                        <div class="product-name">{{ $detail->product?->product_name ?? 'Product' }}</div>
+                        @if($detail->product?->variant)
                             <div class="product-variant">{{ $detail->product->variant }}</div>
                         @endif
                     </td>
                     <td style="text-align:center; color:#8C8078;">{{ $detail->quantity }}</td>
-                    <td style="text-align:right;">PHP {{ number_format($detail->unit_price, 2) }}</td>
-                    <td style="text-align:right; font-weight:400;">PHP {{ number_format($detail->unit_price * $detail->quantity, 2) }}</td>
+                    <td style="text-align:right;">PHP {{ number_format($unitPrice, 2) }}</td>
+                    <td style="text-align:right; font-weight:400;">PHP {{ number_format($lineTotal, 2) }}</td>
                 </tr>
                 @endforeach
             </tbody>
@@ -324,7 +279,7 @@
     <div class="totals">
         <div class="totals-row">
             <span class="totals-label">Subtotal</span>
-            <span class="totals-value">PHP {{ number_format($order->calculated_total, 2) }}</span>
+            <span class="totals-value">PHP {{ number_format($orderTotal, 2) }}</span>
         </div>
         <div class="totals-row">
             <span class="totals-label">Shipping</span>
@@ -332,15 +287,15 @@
         </div>
         <div class="totals-final">
             <span class="totals-label">Total Paid</span>
-            <span class="totals-value">PHP {{ number_format($order->calculated_total, 2) }}</span>
+            <span class="totals-value">PHP {{ number_format($orderTotal, 2) }}</span>
         </div>
     </div>
 
     {{-- ── Delivery Address ── --}}
-    @if($order->delivery_address)
+    @if($order->user->address)
     <div style="margin-bottom:24px; padding:14px 16px; border:1px solid #EDE8DF;">
         <p class="meta-label" style="margin-bottom:4px;">Delivery Address</p>
-        <p style="font-size:11px; color:#1A1714; line-height:1.6;">{{ $order->delivery_address }}</p>
+        <p style="font-size:11px; color:#1A1714; line-height:1.6;">{{ $order->user->address }}</p>
     </div>
     @endif
 

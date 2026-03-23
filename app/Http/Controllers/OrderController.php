@@ -23,7 +23,7 @@ class OrderController extends Controller
             return redirect()->route('cart.index')->with('error', 'Your cart is empty');
         }
 
-        $total = $cartItems->sum(fn($item) => $item->quantity * ($item->product->selling_price ?? 0));
+        $total = $cartItems->sum(fn ($item) => $item->quantity * ($item->product->selling_price ?? 0));
 
         return view('orders.checkout', compact('cartItems', 'total'));
     }
@@ -31,8 +31,14 @@ class OrderController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'delivery_address' => 'required',
-            'payment_method'   => 'required',
+            'address' => 'required|string',
+            'payment_method' => 'required|in:cod,gcash,card',
+            'payment_reference' => 'required_if:payment_method,gcash|nullable|string|max:30',
+        ], [
+            'payment_method.required' => 'Please select a payment method.',
+            'payment_method.in' => 'Please select a valid payment method.',
+            'payment_reference.required_if' => 'Please enter your GCash reference number.',
+            'payment_reference.max' => 'Reference number cannot exceed 30 characters.',
         ]);
 
         $cartItems = Cart::with('product')->where('user_id', Auth::id())->get();
@@ -42,19 +48,24 @@ class OrderController extends Controller
         }
 
         DB::transaction(function () use ($request, $cartItems) {
+            // Update user's address with the submitted address
+            Auth::user()->update(['address' => $request->address]);
+
             $order = Order::create([
-                'user_id'          => Auth::id(),
-                'order_status'     => 'pending',
-                'order_date'       => now(),
-                'delivery_address' => $request->delivery_address,
-                'payment_method'   => $request->payment_method,
+                'user_id' => Auth::id(),
+                'order_status' => 'pending',
+                'order_date' => now(),
+                'payment_method' => $request->payment_method,
+                'payment_reference' => $request->payment_method === 'gcash'
+                                        ? $request->payment_reference
+                                        : null,
             ]);
 
             foreach ($cartItems as $item) {
                 OrderDetail::create([
-                    'order_id'   => $order->order_id,
+                    'order_id' => $order->order_id,
                     'product_id' => $item->product_id,
-                    'quantity'   => $item->quantity,
+                    'quantity' => $item->quantity,
                 ]);
             }
 
