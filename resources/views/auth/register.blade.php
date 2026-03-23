@@ -233,17 +233,16 @@
                     <input id="username" type="text" name="username"
                         value="{{ old('username') }}" placeholder="Choose a username"
                         class="pp-reg-input @error('username') is-invalid @enderror"
-                        required autocomplete="username" autofocus>
+                        autocomplete="username" autofocus>
                     @error('username')<span class="pp-reg-error">{{ $message }}</span>@enderror
                 </div>
 
                 {{-- Email --}}
                 <div class="pp-reg-field">
                     <label for="email" class="pp-reg-label">Email Address</label>
-                    <input id="email" type="email" name="email"
+                    <input id="email" type="text" name="email"
                         value="{{ old('email') }}" placeholder="you@example.com"
-                        class="pp-reg-input @error('email') is-invalid @enderror"
-                        required autocomplete="email">
+                        class="pp-reg-input @error('email') is-invalid @enderror">
                     @error('email')<span class="pp-reg-error">{{ $message }}</span>@enderror
                 </div>
 
@@ -253,7 +252,7 @@
                     <input id="full_name" type="text" name="full_name"
                         value="{{ old('full_name') }}" placeholder="Your full name"
                         class="pp-reg-input @error('full_name') is-invalid @enderror"
-                        required autocomplete="name">
+                        autocomplete="name">
                     @error('full_name')<span class="pp-reg-error">{{ $message }}</span>@enderror
                 </div>
 
@@ -264,7 +263,7 @@
                         <input id="password" type="password" name="password"
                             placeholder="••••••••"
                             class="pp-reg-input @error('password') is-invalid @enderror"
-                            required autocomplete="new-password">
+                            autocomplete="new-password">
                         @error('password')<span class="pp-reg-error">{{ $message }}</span>@enderror
                     </div>
                     <div class="pp-reg-field" style="margin-bottom:0">
@@ -272,7 +271,7 @@
                         <input id="password-confirm" type="password" name="password_confirmation"
                             placeholder="••••••••"
                             class="pp-reg-input"
-                            required autocomplete="new-password">
+                            autocomplete="new-password">
                     </div>
                 </div>
 

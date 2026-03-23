@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -12,29 +11,28 @@ class DatabaseSeeder extends Seeder
 
     /**
      * Seed the application's database.
+     *
+     * Run after a fresh migration:
+     *   php artisan migrate:fresh --seed
+     *
+     * Or seed only:
+     *   php artisan db:seed
+     */
+    /**
+     * Order matters:
+     *   1. ProductionDataSeeder — restores real categories, suppliers, users,
+     *                             products, product_images (paths preserved), supply_logs
+     *   2. OrderSeeder          — randomly generates orders + order_details
+     *                             based on the real users & products above
+     *   3. ReviewSeeder         — randomly generates product reviews
+     *                             based on the real users & products above
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-
-        User::create([
-            'username' => 'admin',
-            'full_name' => 'Admin User',
-            'email' => 'admin@example.com',
-            'password' => bcrypt('password'),
-            'role' => 'admin',
-            'is_active' => true,
+        $this->call([
+            ProductionDataSeeder::class,
+            OrderSeeder::class,
+            ReviewSeeder::class,
         ]);
-
-        User::create([
-            'username' => 'customer',
-            'full_name' => 'Customer User',
-            'email' => 'customer@example.com',
-            'password' => bcrypt('password'),
-            'role' => 'customer',
-            'is_active' => true,
-        ]);
-
-        $this->call(ProductSeeder::class);
     }
 }
